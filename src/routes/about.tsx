@@ -11,7 +11,7 @@ export const Route = createFileRoute("/about")({
     createPageHead({
       title: "About RepCore — Gear Built for Work",
       description:
-        "RepCore designs training tools with the athletes who use them. Heavy materials, honest engineering, and lifetime backing on every product.",
+        "RepCore designs training tools with the athletes who use them. Heavy materials, honest engineering, and quality backing on every product.",
       path: "/about",
       keywords: "RepCore story, training gear brand, fitness equipment company, athlete-founded brand",
     }),
@@ -39,7 +39,7 @@ function AboutPage() {
           </h1>
           <p className={`mt-8 max-w-2xl text-lg text-muted-foreground anim-reveal-up anim-delay-3 ${entered ? "visible" : ""}`}>
             RepCore started in a garage gym in 2019 with one mission: stop buying flimsy training tools.
-            Today we design, test and ship seven essentials that survive real training — and we back every one for life.
+            Today we design, test and ship seven essentials that survive real training, backed by our commitment to quality.
           </p>
         </div>
       </section>
@@ -49,7 +49,7 @@ function AboutPage() {
           {[
             { n: "01", t: "Designed with athletes", d: "Every prototype lives in real gyms before it ships. If lifters break it, we redesign it." },
             { n: "02", t: "Heavy materials", d: "Layered latex, aluminum chassis, dense EVA foam, reinforced cotton. No compromise on the build." },
-            { n: "03", t: "Lifetime backing", d: "If our gear breaks under honest training, we replace it. Forever. No paperwork." },
+            { n: "03", t: "Quality backing", d: "Built to perform, inspected before dispatch, and supported with real customer care." },
           ].map((b, i) => (
             <div
               key={b.n}

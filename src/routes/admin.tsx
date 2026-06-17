@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect, useMemo } from "react";
-import { Pencil, Trash2, Plus, Package, DollarSign, TrendingUp, Users, Ticket, Percent, LogIn, LogOut, KeyRound, Layers, ShoppingBag, Eye, ShieldAlert, Loader2 } from "lucide-react";
+import { Pencil, Trash2, Plus, Package, DollarSign, TrendingUp, Users, Ticket, Percent, LogIn, LogOut, KeyRound, Layers, ShoppingBag, Eye, ShieldAlert, Loader2, Download, CheckCircle2, XCircle, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,7 +13,7 @@ import { SiteLayout } from "@/components/site-layout";
 import { useAuth } from "@/lib/auth-context";
 import { getProductsList, PRODUCTS_STORAGE_KEY, fetchProducts, saveProduct, deleteProduct, type Product } from "@/lib/products";
 import { getCouponsList, saveCouponsList, fetchCoupons, saveCoupon as saveCouponRemote, deleteCoupon as deleteCouponRemote, type Coupon } from "@/lib/coupons";
-import { fetchOrders, updateOrderStatus, saveOrder, getOrdersList, ORDERS_STORAGE_KEY, deleteOrder, type Order, type OrderItem } from "@/lib/orders";
+import { exportOrdersCsv, fetchOrders, updateOrderStatus, updatePaymentStatus, updateTrackingNumber, saveOrder, getOrdersList, ORDERS_STORAGE_KEY, deleteOrder, type Order, type OrderItem, type OrderStatus, type PaymentStatus, mapOrderStatusToLegacy } from "@/lib/orders";
 import { fetchCustomers, getCustomersList, deleteCustomer, CUSTOMERS_STORAGE_KEY, type Customer } from "@/lib/customers";
 import { fetchCategories, saveCategory, deleteCategory, getCategoriesList, type Category } from "@/lib/categories";
 import { useReveal, useTilt3D, useStaggerReveal } from "@/hooks/use-animations";
@@ -56,6 +56,9 @@ function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [orderSearch, setOrderSearch] = useState("");
+  const [orderStatusFilter, setOrderStatusFilter] = useState<"all" | OrderStatus>("all");
+  const [paymentStatusFilter, setPaymentStatusFilter] = useState<"all" | PaymentStatus>("all");
 
   // Detailed Modal states
   const [orderDetail, setOrderDetail] = useState<Order | null>(null);
@@ -103,6 +106,20 @@ function AdminPage() {
   const activeOrders = orders.filter(o => o.status !== "cancelled");
   const totalSales = activeOrders.reduce((s, o) => s + o.total, 0);
   const avgOrderValue = activeOrders.length > 0 ? Math.round(totalSales / activeOrders.length) : 0;
+  const filteredOrders = orders.filter((o) => {
+    const q = orderSearch.trim().toLowerCase();
+    const matchesSearch = !q || [
+      o.id,
+      o.customerName,
+      o.customerEmail,
+      o.shippingAddress.phone,
+      o.trackingNumber || "",
+      o.utrNumber || "",
+    ].some((value) => value.toLowerCase().includes(q));
+    const matchesOrder = orderStatusFilter === "all" || o.orderStatus === orderStatusFilter;
+    const matchesPayment = paymentStatusFilter === "all" || o.paymentStatus === paymentStatusFilter;
+    return matchesSearch && matchesOrder && matchesPayment;
+  });
   
   // Products average pricing
   const totalProductValue = items.reduce((s, p) => s + p.price, 0);
@@ -248,8 +265,8 @@ function AdminPage() {
   };
 
   // Order Actions
-  const handleUpdateStatus = async (id: string, status: Order["status"]) => {
-    const updated = orders.map(o => o.id === id ? { ...o, status } : o);
+  const handleUpdateStatus = async (id: string, status: OrderStatus) => {
+    const updated = orders.map(o => o.id === id ? { ...o, orderStatus: status, status: mapOrderStatusToLegacy(status) } : o);
     setOrders(updated);
     localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
     toast.success(`Order status updated to ${status}.`);
@@ -262,6 +279,45 @@ function AdminPage() {
       },
       error: "Error syncing status to Supabase."
     });
+  };
+
+  const handleUpdatePaymentStatus = async (id: string, paymentStatus: PaymentStatus) => {
+    const updated = orders.map(o => {
+      if (o.id !== id) return o;
+      const nextOrderStatus = paymentStatus === "Verified" ? "Confirmed" : paymentStatus === "Rejected" ? "Cancelled" : o.orderStatus;
+      return { ...o, paymentStatus, orderStatus: nextOrderStatus, status: mapOrderStatusToLegacy(nextOrderStatus) };
+    });
+    setOrders(updated);
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
+
+    toast.promise(updatePaymentStatus(id, paymentStatus), {
+      loading: "Syncing payment decision...",
+      success: (success) => success ? "Payment status synced." : "Payment updated locally.",
+      error: "Error syncing payment status."
+    });
+  };
+
+  const handleTrackingChange = async (id: string, trackingNumber: string) => {
+    const updated = orders.map(o => o.id === id ? { ...o, trackingNumber } : o);
+    setOrders(updated);
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(updated));
+
+    toast.promise(updateTrackingNumber(id, trackingNumber), {
+      loading: "Saving tracking number...",
+      success: (success) => success ? "Tracking number synced." : "Tracking saved locally.",
+      error: "Error syncing tracking number."
+    });
+  };
+
+  const handleExportOrders = () => {
+    const csv = exportOrdersCsv(orders);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `repcore-orders-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleRemoveOrder = async (id: string) => {
@@ -481,6 +537,11 @@ function AdminPage() {
             {activeTab === "categories" && (
               <Button variant="hero" size="lg" onClick={() => setCategoryOpen(true)} className="btn-lift glow-pulse">
                 <Plus className="h-4 w-4" /> New category
+              </Button>
+            )}
+            {activeTab === "orders" && (
+              <Button variant="hero" size="lg" onClick={handleExportOrders} className="btn-lift glow-pulse">
+                <Download className="h-4 w-4" /> Export orders
               </Button>
             )}
             <Button

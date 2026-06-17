@@ -91,8 +91,7 @@ function ProductPage() {
   };
   const handleBuy = () => {
     if (!product) return;
-    add(product.slug, qty);
-    navigate({ to: "/checkout" });
+    navigate({ to: "/checkout", search: { product: product.slug, qty } });
   };
 
   // Entrance animation
@@ -257,7 +256,7 @@ function ProductPage() {
           >
             <Perk icon={<Truck className="h-4 w-4" />} label="Free over ₹500" />
             <Perk icon={<RotateCcw className="h-4 w-4" />} label="60-day returns" />
-            <Perk icon={<ShieldCheck className="h-4 w-4" />} label="Lifetime warranty" />
+            <Perk icon={<ShieldCheck className="h-4 w-4" />} label="Quality checked" />
           </div>
 
           {/* Interactive Specification Tabs */}
@@ -303,14 +302,13 @@ function ProductPage() {
               {activeTab === "shipping" && (
                 <div className="p-5 rounded-2xl border border-border/60 bg-card/25 backdrop-blur-md text-sm text-muted-foreground/90 space-y-3 leading-relaxed">
                   <p>
-                    🚀 Orders are processed within 24 hours and ship via tracked express courier.
+                    🚀 Orders ship within 1-3 business days via tracked courier.
                   </p>
                   <p>
-                    📦 Free shipping on all orders over ₹500. Flat rate of ₹99 worldwide below ₹500.
+                    📦 Free shipping on all orders above ₹500. Flat rate of ₹99 below ₹500.
                   </p>
                   <p>
-                    ⏱️ Estimated delivery: 2-4 business days (US/EU) or 5-9 business days
-                    (International).
+                    ⏱️ Estimated delivery: 3-7 business days across India after dispatch.
                   </p>
                 </div>
               )}
@@ -318,12 +316,11 @@ function ProductPage() {
               {activeTab === "warranty" && (
                 <div className="p-5 rounded-2xl border border-border/60 bg-card/25 backdrop-blur-md text-sm text-muted-foreground/90 space-y-3 leading-relaxed">
                   <p>
-                    🛡️ We stand behind our gear. Every tool features our legendary **RepCore
-                    Lifetime Backing**.
+                    🛡️ We stand behind our gear with RepCore quality assurance.
                   </p>
                   <p>
-                    💪 If your gear fails, breaks, or tears during training under honest use, we
-                    replace it. No registration required.
+                    💪 Built to perform, inspected before dispatch, and backed by our commitment to
+                    quality.
                   </p>
                 </div>
               )}

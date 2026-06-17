@@ -1,12 +1,24 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, Flame, ShieldCheck, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  CreditCard,
+  Flame,
+  Headphones,
+  ShieldCheck,
+  Star,
+  Truck,
+  Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site-layout";
 import { getProductsList, fetchProducts, type Product } from "@/lib/products";
 import { createPageHead, websiteJsonLd } from "@/lib/seo";
+import founderPratyush from "@/assets/founder-pratyush.png";
+import founderVishal from "@/assets/founder-vishal.png";
 
-import { useReveal, useStaggerReveal, useTilt3D, useCountUp } from "@/hooks/use-animations";
+import { useReveal, useStaggerReveal, useTilt3D } from "@/hooks/use-animations";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
@@ -46,6 +58,8 @@ function Index() {
   // Section reveals
   const valueProps = useReveal(0.2);
   const productSection = useReveal(0.1);
+  const founderSection = useReveal(0.15);
+  const reviewsSection = useReveal(0.15);
   const { containerRef: gridRef, visibleItems: gridVisible } = useStaggerReveal(
     featured.length,
     120,
@@ -119,11 +133,21 @@ function Index() {
             <div
               className={`mt-16 w-full max-w-2xl rounded-2xl border border-border/40 bg-card/25 p-8 backdrop-blur-md grid grid-cols-3 gap-6 anim-reveal-up anim-delay-7 ${heroReady ? "visible" : ""}`}
             >
-              <AnimStat value="120k+" numValue={120} suffix="k+" label="Active Athletes" />
-              <AnimStat value="98%" numValue={98} suffix="%" label="User Rating" />
-              <AnimStat value="7" numValue={7} suffix="" label="Core Tools" />
+              <AnimStat value="7+" label="Premium Products" />
+              <AnimStat value="100%" label="Performance Focused" />
+              <AnimStat value="24/7" label="Customer Support" />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* TRUST BAR */}
+      <section className="border-b border-border/60 bg-background">
+        <div className="mx-auto grid max-w-7xl gap-px px-4 py-4 sm:px-6 md:grid-cols-4">
+          <TrustItem icon={<CreditCard className="h-4 w-4" />} label="Secure Payments" />
+          <TrustItem icon={<Truck className="h-4 w-4" />} label="Fast Shipping" />
+          <TrustItem icon={<ShieldCheck className="h-4 w-4" />} label="Premium Quality" />
+          <TrustItem icon={<Headphones className="h-4 w-4" />} label="Customer Support" />
         </div>
       </section>
 
@@ -142,15 +166,15 @@ function Index() {
           />
           <ValueProp
             icon={<ShieldCheck className="h-5 w-5" />}
-            title="Lifetime Guarantee"
-            desc="If our gear breaks under honest training, we replace it. No questions."
+            title="Quality Guaranteed"
+            desc="Built to perform. Backed by our commitment to quality."
             visible={valueProps.visible}
             delay={1}
           />
           <ValueProp
             icon={<Zap className="h-5 w-5" />}
-            title="Fast Free Shipping"
-            desc="Orders ship in 24 hours. Free over $50, worldwide tracked."
+            title="Fast Pan India Shipping"
+            desc="Ships within 1-3 business days. Free shipping on orders above ₹500."
             visible={valueProps.visible}
             delay={2}
           />
@@ -208,6 +232,50 @@ function Index() {
         </div>
       </section>
 
+      {/* FOUNDERS */}
+      <section ref={founderSection.ref} className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className={`anim-reveal-left ${founderSection.visible ? "visible" : ""}`}>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary">Built by Lifters</div>
+            <h2 className="mt-3 text-5xl sm:text-7xl">Premium gear without the premium markup.</h2>
+            <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
+              Founded by Pratyush Sharma and Vishal Dhillon, RepCore was created to deliver
+              premium fitness accessories without the premium price tag.
+            </p>
+          </div>
+          <div
+            className={`grid gap-5 sm:grid-cols-2 anim-reveal-right anim-delay-2 ${founderSection.visible ? "visible" : ""}`}
+          >
+            <FounderCard image={founderPratyush} name="Pratyush Sharma" />
+            <FounderCard image={founderVishal} name="Vishal Dhillon" />
+          </div>
+        </div>
+      </section>
+
+      {/* REVIEWS */}
+      <section
+        ref={reviewsSection.ref}
+        className="border-y border-border/60 bg-card/30 section-glow-divider"
+      >
+        <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+          <div className={`anim-reveal-up ${reviewsSection.visible ? "visible" : ""}`}>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary">Customer Reviews</div>
+            <h2 className="mt-3 text-5xl sm:text-7xl">Lift-tested. Customer-backed.</h2>
+          </div>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <TestimonialCard
+                key={t.name}
+                quote={t.quote}
+                name={t.name}
+                visible={reviewsSection.visible}
+                delay={i}
+              />
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section ref={ctaSection.ref} className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <div
@@ -230,7 +298,7 @@ function Index() {
           <div className="relative">
             <h3 className="text-5xl sm:text-7xl">Ready to train heavy?</h3>
             <p className="mt-4 max-w-lg text-muted-foreground">
-              Free shipping over ₹500. 60-day return window. Lifetime guarantee on every tool.
+              Free shipping over ₹500. 60-day return window. Quality gear built for hard training.
             </p>
             <div className="mt-8">
               <Button variant="hero" size="xl" asChild className="btn-lift glow-pulse">
@@ -248,21 +316,16 @@ function Index() {
 
 /* ─── Animated counter stat ─────────────────────────────── */
 function AnimStat({
-  numValue,
-  suffix,
+  value,
   label,
 }: {
   value: string;
-  numValue: number;
-  suffix: string;
   label: string;
 }) {
-  const { ref, value } = useCountUp(numValue, 1800);
   return (
-    <div ref={ref}>
+    <div>
       <div className="display text-4xl text-foreground">
         {value}
-        {suffix}
       </div>
       <div className="mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
         <span className="mr-1 inline-block h-1 w-1 rounded-full bg-primary align-middle" />
@@ -329,6 +392,87 @@ function ProductCard({
         </div>
       </Link>
     </div>
+  );
+}
+
+const testimonials = [
+  {
+    quote: "Great quality straps and wrist wraps. Exactly what I needed for heavy lifts.",
+    name: "Rahul S.",
+  },
+  {
+    quote: "The shaker feels solid, the bands have clean tension, and delivery was quick.",
+    name: "Ankit M.",
+  },
+  {
+    quote: "RepCore nails the basics. No flashy nonsense, just gym gear that feels reliable.",
+    name: "Karan P.",
+  },
+];
+
+function TrustItem({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <div className="flex items-center justify-center gap-2 px-3 py-3 text-sm font-medium text-foreground">
+      <span className="grid h-8 w-8 place-items-center rounded-full bg-primary/10 text-primary">
+        {icon}
+      </span>
+      {label}
+    </div>
+  );
+}
+
+function FounderCard({ image, name }: { image: string; name: string }) {
+  return (
+    <figure className="group overflow-hidden rounded-2xl border border-border/60 bg-card">
+      <div className="aspect-[4/5] overflow-hidden bg-secondary">
+        <img
+          src={image}
+          alt={name}
+          loading="lazy"
+          width={720}
+          height={900}
+          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+        />
+      </div>
+      <figcaption className="border-t border-border/60 p-5">
+        <div className="display text-xl">{name}</div>
+        <div className="mt-1 text-xs uppercase tracking-widest text-muted-foreground">
+          Co-founder
+        </div>
+      </figcaption>
+    </figure>
+  );
+}
+
+function TestimonialCard({
+  quote,
+  name,
+  visible,
+  delay,
+}: {
+  quote: string;
+  name: string;
+  visible: boolean;
+  delay: number;
+}) {
+  return (
+    <figure
+      className={`rounded-2xl border border-border/60 bg-background p-6 anim-reveal-up ${visible ? "visible" : ""}`}
+      style={{ animationDelay: `${delay * 0.12}s` }}
+    >
+      <div className="flex gap-1 text-primary" aria-label="5 star review">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Star key={i} className="h-4 w-4 fill-current" />
+        ))}
+      </div>
+      <blockquote className="mt-4 text-base leading-relaxed text-foreground">
+        "{quote}"
+      </blockquote>
+      <figcaption className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+        <CheckCircle2 className="h-4 w-4 text-primary" />
+        {name}
+      </figcaption>
+    </figure>
   );
 }
 

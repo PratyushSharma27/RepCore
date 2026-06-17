@@ -14,7 +14,7 @@ export const Route = createFileRoute("/faq")({
     createPageHead({
       title: "FAQ — Shipping, Returns & Product Care",
       description:
-        "RepCore FAQ: shipping times, international delivery, returns, lifetime warranty, and product care for training gear.",
+        "RepCore FAQ: Pan India shipping times, returns, quality assurance, and product care for training gear.",
       path: "/faq",
       keywords: "RepCore FAQ, training gear shipping, fitness equipment warranty, returns policy",
       jsonLd: faqPageJsonLd(faqGroups),

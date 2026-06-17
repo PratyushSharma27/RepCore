@@ -9,15 +9,15 @@ export const faqGroups: FaqGroup[] = [
     items: [
       {
         q: "How fast do you ship?",
-        a: "Orders placed before 2pm ET ship same day. Standard delivery lands in 2–5 business days.",
+        a: "Orders ship within 1-3 business days. Standard delivery usually lands in 3-7 business days after dispatch.",
       },
       {
-        q: "Do you ship internationally?",
-        a: "Yes — we ship to 38 countries. Duties and taxes are calculated at checkout.",
+        q: "Where do you ship?",
+        a: "We currently offer fast Pan India shipping through tracked courier partners.",
       },
       {
         q: "Is shipping free?",
-        a: "Free standard shipping on all US orders over $50.",
+        a: "Free shipping on orders above ₹500. Orders below ₹500 ship at a flat ₹99 rate.",
       },
     ],
   },
@@ -30,11 +30,11 @@ export const faqGroups: FaqGroup[] = [
       },
       {
         q: "Do products have a warranty?",
-        a: "Every RepCore tool ships with a lifetime defect warranty. If it breaks under normal training, we replace it.",
+        a: "Every RepCore product is quality checked before dispatch and backed by our commitment to quality.",
       },
       {
         q: "What if my item arrives damaged?",
-        a: "Email support@repcore.co with a photo within 7 days and we'll overnight a replacement.",
+        a: "Email support@repcore.co with a photo within 7 days and we'll help resolve it quickly.",
       },
     ],
   },
