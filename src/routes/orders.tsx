@@ -4,7 +4,7 @@ import { ShoppingBag, Calendar, ArrowRight, Lock, Loader2, Package } from "lucid
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site-layout";
 import { useAuth } from "@/lib/auth-context";
-import { fetchOrders, getOrdersList, type Order } from "@/lib/orders";
+import { fetchOrders, getOrdersList, getOrderStatusClass, type Order } from "@/lib/orders";
 import { useReveal } from "@/hooks/use-animations";
 import { createNoIndexHead } from "@/lib/seo";
 
@@ -34,12 +34,16 @@ function OrdersPage() {
       setLoadingOrders(true);
       // Load local cache first for instant feedback
       const cached = getOrdersList();
-      const userCached = cached.filter(o => o.customerEmail.toLowerCase() === user.email?.toLowerCase());
+      const userCached = cached.filter(
+        (o) => o.customerEmail.toLowerCase() === user.email?.toLowerCase(),
+      );
       setOrders(userCached);
 
       try {
         const dbOrders = await fetchOrders();
-        const userDbOrders = dbOrders.filter(o => o.customerEmail.toLowerCase() === user.email?.toLowerCase());
+        const userDbOrders = dbOrders.filter(
+          (o) => o.customerEmail.toLowerCase() === user.email?.toLowerCase(),
+        );
         setOrders(userDbOrders);
       } catch (err) {
         console.warn("Failed to fetch orders from database, using cached local copy:", err);
@@ -54,24 +58,13 @@ function OrdersPage() {
     return () => clearTimeout(t);
   }, [user]);
 
-  const getStatusStyles = (status: Order["status"]) => {
-    switch (status) {
-      case "delivered":
-        return "bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-semibold shadow-[0_0_10px_rgba(16,185,129,0.15)]";
-      case "shipped":
-        return "bg-blue-500/10 border-blue-500/30 text-blue-400 font-semibold shadow-[0_0_10px_rgba(59,130,246,0.15)]";
-      case "cancelled":
-        return "bg-red-500/10 border-red-500/30 text-red-400 font-semibold shadow-[0_0_10px_rgba(239,68,68,0.15)]";
-      default: // pending
-        return "bg-amber-500/10 border-amber-500/30 text-amber-400 font-semibold shadow-[0_0_10px_rgba(245,158,11,0.15)]";
-    }
-  };
-
   return (
     <SiteLayout>
       <section className="relative overflow-hidden border-b border-border/60 particle-field">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-          <div className={`text-xs uppercase tracking-[0.3em] text-primary anim-reveal-left ${entered ? "visible" : ""}`}>
+          <div
+            className={`text-xs uppercase tracking-[0.3em] text-primary anim-reveal-left ${entered ? "visible" : ""}`}
+          >
             Customer Space
           </div>
           <h1 className={`mt-3 text-5xl sm:text-7xl anim-hero-text ${entered ? "visible" : ""}`}>
@@ -84,7 +77,9 @@ function OrdersPage() {
         {authLoading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-3">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground uppercase tracking-widest">Hydrating Session...</p>
+            <p className="text-sm text-muted-foreground uppercase tracking-widest">
+              Hydrating Session...
+            </p>
           </div>
         ) : !user ? (
           /* Login prompt guard screen */
@@ -94,7 +89,8 @@ function OrdersPage() {
             </div>
             <h2 className="display text-2xl font-bold">Access Protected</h2>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Please log in or register a new account to review your order history, invoice details, and shipment progress tracker.
+              Please log in or register a new account to review your order history, invoice details,
+              and shipment progress tracker.
             </p>
             <div className="pt-2 text-xs text-muted-foreground">
               Click the Profile icon in the top right header navigation bar to log in.
@@ -126,20 +122,31 @@ function OrdersPage() {
                     </thead>
                     <tbody>
                       {orders.map((o) => (
-                        <tr key={o.id} className="border-b border-border/40 last:border-0 hover:bg-primary/5 transition-colors">
+                        <tr
+                          key={o.id}
+                          className="border-b border-border/40 last:border-0 hover:bg-primary/5 transition-colors"
+                        >
                           <td className="p-4 font-mono font-bold text-primary">{o.id}</td>
                           <td className="p-4 text-muted-foreground text-xs">
-                            {new Date(o.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric", year: "numeric" })}
+                            {new Date(o.createdAt).toLocaleDateString("en-IN", {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            })}
                           </td>
                           <td className="p-4 text-foreground/90 font-medium">
                             <div className="max-w-xs truncate">
-                              {o.items.map(i => `${i.name} (x${i.qty})`).join(", ")}
+                              {o.items.map((i) => `${i.name} (x${i.qty})`).join(", ")}
                             </div>
                           </td>
-                          <td className="p-4 font-bold text-foreground">₹{o.total.toLocaleString("en-IN")}</td>
+                          <td className="p-4 font-bold text-foreground">
+                            ₹{o.total.toLocaleString("en-IN")}
+                          </td>
                           <td className="p-4">
-                            <span className={`rounded-full border px-2 py-0.5 text-xs ${getStatusStyles(o.status)}`}>
-                              {o.status}
+                            <span
+                              className={`rounded-full border px-2 py-0.5 text-xs font-semibold ${getOrderStatusClass(o.orderStatus)}`}
+                            >
+                              {o.orderStatus}
                             </span>
                           </td>
                           <td className="p-4 text-right">
@@ -149,7 +156,7 @@ function OrdersPage() {
                               onClick={() => navigate({ to: "/track", search: { id: o.id } })}
                               className="btn-lift glow-pulse text-xs group"
                             >
-                              Track Order 
+                              Track Order
                               <ArrowRight className="h-3 w-3 ml-1.5 transition-transform duration-300 group-hover:translate-x-1" />
                             </Button>
                           </td>

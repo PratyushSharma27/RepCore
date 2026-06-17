@@ -19,6 +19,33 @@ export type Product = {
   specs: { label: string; value: string }[];
 };
 
+const productImagesBySlug: Record<string, string> = {
+  "mini-resistance-band": bands,
+  "lifting-straps": straps,
+  "wrist-support": wrist,
+  "hand-grip-strengthener": grip,
+  "premium-shaker-bottle": shaker,
+  "foam-roller": foam,
+  "mini-massage-gun": gun,
+};
+
+const looksLikeUnbundledAssetPath = (image?: string) => {
+  if (!image) return true;
+  return image.startsWith("/src/assets/") || image.startsWith("src/assets/");
+};
+
+export const resolveProductImage = (slug: string, image?: string) => {
+  if (looksLikeUnbundledAssetPath(image)) {
+    return productImagesBySlug[slug] || image || "";
+  }
+  return image;
+};
+
+const normalizeProductImage = (product: Product): Product => ({
+  ...product,
+  image: resolveProductImage(product.slug, product.image),
+});
+
 export const products: Product[] = [
   {
     slug: "mini-resistance-band",
@@ -176,15 +203,15 @@ export const getProductsList = (): Product[] => {
     const stored = localStorage.getItem(PRODUCTS_STORAGE_KEY);
     if (stored) {
       try {
-        return JSON.parse(stored);
+        return JSON.parse(stored).map(normalizeProductImage);
       } catch {
-        return products;
+        return products.map(normalizeProductImage);
       }
     } else {
       localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify(products));
     }
   }
-  return products;
+  return products.map(normalizeProductImage);
 };
 
 export const getProduct = (slug: string) => {
@@ -220,7 +247,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
         tagline: item.tagline || "",
         price: Number(item.price),
         category: item.category || "",
-        image: item.image || "",
+        image: resolveProductImage(item.slug, item.image || ""),
         description: item.description || "",
         features: Array.isArray(item.features) ? item.features : [],
         specs: Array.isArray(item.specs) ? item.specs : [],

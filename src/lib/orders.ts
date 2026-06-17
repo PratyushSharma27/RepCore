@@ -1,8 +1,25 @@
 import { requireSupabase } from "./supabase";
 
 export type PaymentStatus = "Pending Verification" | "Verified" | "Rejected";
-export type OrderStatus = "Pending" | "Confirmed" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+export type OrderStatus =
+  | "Pending"
+  | "Confirmed"
+  | "Processing"
+  | "Shipped"
+  | "Delivered"
+  | "Cancelled";
 export type LegacyOrderStatus = "pending" | "shipped" | "delivered" | "cancelled";
+
+export const ORDER_STATUSES: OrderStatus[] = [
+  "Pending",
+  "Confirmed",
+  "Processing",
+  "Shipped",
+  "Delivered",
+  "Cancelled",
+];
+
+export const PAYMENT_STATUSES: PaymentStatus[] = ["Pending Verification", "Verified", "Rejected"];
 
 export type OrderItem = {
   slug: string;
@@ -221,6 +238,42 @@ export const mapOrderStatusToLegacy = (status: OrderStatus): LegacyOrderStatus =
   }
 };
 
+export const getOrderStatusClass = (status: OrderStatus | LegacyOrderStatus) => {
+  const normalized = normalizeOrderStatus(status);
+  switch (normalized) {
+    case "Delivered":
+      return "bg-emerald-500/10 border-emerald-500/30 text-emerald-400";
+    case "Shipped":
+      return "bg-blue-500/10 border-blue-500/30 text-blue-400";
+    case "Cancelled":
+      return "bg-red-500/10 border-red-500/30 text-red-400";
+    case "Confirmed":
+      return "bg-cyan-500/10 border-cyan-500/30 text-cyan-400";
+    case "Processing":
+      return "bg-violet-500/10 border-violet-500/30 text-violet-400";
+    default:
+      return "bg-amber-500/10 border-amber-500/30 text-amber-400";
+  }
+};
+
+export const getOrderStatusStep = (status: OrderStatus | LegacyOrderStatus): number => {
+  switch (normalizeOrderStatus(status)) {
+    case "Pending":
+      return 1;
+    case "Confirmed":
+    case "Processing":
+      return 2;
+    case "Shipped":
+      return 3;
+    case "Delivered":
+      return 4;
+    case "Cancelled":
+      return -1;
+    default:
+      return 0;
+  }
+};
+
 export const normalizeOrderStatus = (status?: string): OrderStatus => {
   switch ((status || "").toLowerCase()) {
     case "confirmed":
@@ -250,6 +303,12 @@ export const normalizePaymentStatus = (status?: string): PaymentStatus => {
   }
 };
 
+const isMissingColumnError = (err: unknown) => {
+  if (!err || typeof err !== "object") return false;
+  const maybeErr = err as { code?: string; message?: string };
+  return maybeErr.code === "PGRST204" || /column|schema cache/i.test(maybeErr.message || "");
+};
+
 const normalizeOrder = (raw: Partial<Order>): Order => {
   const orderStatus = normalizeOrderStatus(raw.orderStatus || raw.status);
   return {
@@ -276,12 +335,29 @@ const normalizeOrder = (raw: Partial<Order>): Order => {
   };
 };
 
+const sortOrdersNewestFirst = (orders: Order[]) =>
+  [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+const mergeOrders = (remoteOrders: Order[], localOrders: Order[]) => {
+  const merged = new Map<string, Order>();
+
+  localOrders.forEach((order) => {
+    merged.set(order.id, normalizeOrder(order));
+  });
+
+  remoteOrders.forEach((order) => {
+    merged.set(order.id, normalizeOrder(order));
+  });
+
+  return sortOrdersNewestFirst([...merged.values()]);
+};
+
 export const getOrdersList = (): Order[] => {
   if (typeof window !== "undefined") {
     const stored = localStorage.getItem(ORDERS_STORAGE_KEY);
     if (stored) {
       try {
-        return JSON.parse(stored).map(normalizeOrder);
+        return sortOrdersNewestFirst(JSON.parse(stored).map(normalizeOrder));
       } catch {
         return defaultOrders;
       }
@@ -295,13 +371,19 @@ export const getOrdersList = (): Order[] => {
 export const fetchOrders = async (): Promise<Order[]> => {
   try {
     const supabase = requireSupabase();
-    const { data, error } = await supabase
+    let { data, error } = await supabase
       .from("orders")
       .select("*, order_items(*)")
       .order("created_at", { ascending: false });
 
     if (error) {
-      throw error;
+      const fallback = await supabase
+        .from("orders")
+        .select("*")
+        .order("created_at", { ascending: false });
+      data = fallback.data;
+      error = fallback.error;
+      if (error) throw error;
     }
 
     if (data && data.length > 0) {
@@ -309,15 +391,18 @@ export const fetchOrders = async (): Promise<Order[]> => {
         id: item.id,
         customerEmail: item.customer_email,
         customerName: item.customer_name || "",
-        items: Array.isArray(item.order_items) && item.order_items.length > 0
-          ? item.order_items.map((orderItem: Record<string, unknown>) => ({
-              slug: String(orderItem.product_id || ""),
-              productId: String(orderItem.product_id || ""),
-              name: String(orderItem.product_name || ""),
-              price: Number(orderItem.price || 0),
-              qty: Number(orderItem.quantity || 1),
-            }))
-          : Array.isArray(item.items) ? item.items : [],
+        items:
+          Array.isArray(item.order_items) && item.order_items.length > 0
+            ? item.order_items.map((orderItem: Record<string, unknown>) => ({
+                slug: String(orderItem.product_id || ""),
+                productId: String(orderItem.product_id || ""),
+                name: String(orderItem.product_name || ""),
+                price: Number(orderItem.price || 0),
+                qty: Number(orderItem.quantity || 1),
+              }))
+            : Array.isArray(item.items)
+              ? item.items
+              : [],
         total: Number(item.total_amount ?? item.total ?? 0),
         status: mapOrderStatusToLegacy(normalizeOrderStatus(item.order_status || item.status)),
         orderStatus: normalizeOrderStatus(item.order_status || item.status),
@@ -335,8 +420,9 @@ export const fetchOrders = async (): Promise<Order[]> => {
         },
         createdAt: item.created_at || new Date().toISOString(),
       }));
-      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(parsed));
-      return parsed;
+      const merged = mergeOrders(parsed, getOrdersList());
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(merged));
+      return merged;
     }
   } catch (err) {
     console.warn("Could not load orders from Supabase (falling back to client cache):", err);
@@ -347,7 +433,7 @@ export const fetchOrders = async (): Promise<Order[]> => {
 export const saveOrder = async (o: Order): Promise<boolean> => {
   try {
     const supabase = requireSupabase();
-    const { error } = await supabase.from("orders").upsert({
+    const fullOrder = {
       id: o.id,
       customer_email: o.customerEmail,
       customer_name: o.customerName,
@@ -367,8 +453,33 @@ export const saveOrder = async (o: Order): Promise<boolean> => {
       status: o.status,
       shipping_address: o.shippingAddress,
       created_at: o.createdAt,
-    });
-    if (error) throw error;
+    };
+    const { error } = await supabase.from("orders").upsert(fullOrder);
+    if (error) {
+      if (isMissingColumnError(error)) {
+        const legacyOrder = {
+          id: o.id,
+          customer_email: o.customerEmail,
+          customer_name: o.customerName,
+          phone: o.shippingAddress.phone,
+          email: o.customerEmail,
+          address: o.shippingAddress.address,
+          city: o.shippingAddress.city,
+          state: o.shippingAddress.state || "",
+          pincode: o.shippingAddress.postalCode,
+          total_amount: o.total,
+          payment_status: o.paymentStatus,
+          status: o.status,
+          shipping_address: o.shippingAddress,
+          items: o.items,
+          created_at: o.createdAt,
+        };
+        const { error: legacyError } = await supabase.from("orders").upsert(legacyOrder);
+        if (legacyError) throw legacyError;
+      } else {
+        throw error;
+      }
+    }
     await supabase.from("order_items").delete().eq("order_id", o.id);
     const orderItems = o.items.map((item) => ({
       order_id: o.id,
@@ -428,7 +539,17 @@ export const updateOrderStatus = async (id: string, status: OrderStatus): Promis
       .from("orders")
       .update({ order_status: status, status: mapOrderStatusToLegacy(status) })
       .eq("id", id);
-    if (error) throw error;
+    if (error) {
+      if (isMissingColumnError(error)) {
+        const { error: legacyError } = await supabase
+          .from("orders")
+          .update({ status: mapOrderStatusToLegacy(status) })
+          .eq("id", id);
+        if (legacyError) throw legacyError;
+        return true;
+      }
+      throw error;
+    }
     return true;
   } catch (err) {
     console.error("Error updating order status in Supabase:", err);
@@ -436,18 +557,37 @@ export const updateOrderStatus = async (id: string, status: OrderStatus): Promis
   }
 };
 
-export const updatePaymentStatus = async (id: string, paymentStatus: PaymentStatus): Promise<boolean> => {
+export const updatePaymentStatus = async (
+  id: string,
+  paymentStatus: PaymentStatus,
+): Promise<boolean> => {
   try {
     const supabase = requireSupabase();
     const nextOrderStatus: OrderStatus | undefined =
-      paymentStatus === "Verified" ? "Confirmed" : paymentStatus === "Rejected" ? "Cancelled" : undefined;
+      paymentStatus === "Verified"
+        ? "Confirmed"
+        : paymentStatus === "Rejected"
+          ? "Cancelled"
+          : undefined;
     const patch: Record<string, string> = { payment_status: paymentStatus };
     if (nextOrderStatus) {
       patch.order_status = nextOrderStatus;
       patch.status = mapOrderStatusToLegacy(nextOrderStatus);
     }
     const { error } = await supabase.from("orders").update(patch).eq("id", id);
-    if (error) throw error;
+    if (error) {
+      if (isMissingColumnError(error)) {
+        const legacyPatch: Record<string, string> = { payment_status: paymentStatus };
+        if (nextOrderStatus) legacyPatch.status = mapOrderStatusToLegacy(nextOrderStatus);
+        const { error: legacyError } = await supabase
+          .from("orders")
+          .update(legacyPatch)
+          .eq("id", id);
+        if (legacyError) throw legacyError;
+        return true;
+      }
+      throw error;
+    }
     return true;
   } catch (err) {
     console.error("Error updating payment status in Supabase:", err);
@@ -455,11 +595,20 @@ export const updatePaymentStatus = async (id: string, paymentStatus: PaymentStat
   }
 };
 
-export const updateTrackingNumber = async (id: string, trackingNumber: string): Promise<boolean> => {
+export const updateTrackingNumber = async (
+  id: string,
+  trackingNumber: string,
+): Promise<boolean> => {
   try {
     const supabase = requireSupabase();
-    const { error } = await supabase.from("orders").update({ tracking_number: trackingNumber }).eq("id", id);
-    if (error) throw error;
+    const { error } = await supabase
+      .from("orders")
+      .update({ tracking_number: trackingNumber })
+      .eq("id", id);
+    if (error) {
+      if (isMissingColumnError(error)) return false;
+      throw error;
+    }
     return true;
   } catch (err) {
     console.error("Error updating tracking number in Supabase:", err);

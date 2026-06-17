@@ -17,7 +17,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { SiteLayout } from "@/components/site-layout";
 import { useAuth } from "@/lib/auth-context";
-import { fetchOrders, getOrdersList, type Order } from "@/lib/orders";
+import {
+  fetchOrders,
+  getOrdersList,
+  getOrderStatusClass,
+  getOrderStatusStep,
+  type Order,
+} from "@/lib/orders";
 import { useReveal } from "@/hooks/use-animations";
 import { z } from "zod";
 import { createNoIndexHead } from "@/lib/seo";
@@ -131,23 +137,7 @@ function TrackPage() {
     });
   };
 
-  // Determine active status stage
-  const getStatusStep = (status: Order["status"]): number => {
-    switch (status) {
-      case "pending":
-        return 1; // Ordered done, Processing active
-      case "shipped":
-        return 2; // Ordered & Processing done, Shipped active
-      case "delivered":
-        return 3; // All done, Delivered done
-      case "cancelled":
-        return -1;
-      default:
-        return 0;
-    }
-  };
-
-  const currentStep = foundOrder ? getStatusStep(foundOrder.status) : 0;
+  const currentStep = foundOrder ? getOrderStatusStep(foundOrder.orderStatus) : 0;
 
   return (
     <SiteLayout>
@@ -233,17 +223,11 @@ function TrackPage() {
                       </div>
                       <div className="text-right shrink-0 ml-2">
                         <span
-                          className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${
-                            o.status === "delivered"
-                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                              : o.status === "shipped"
-                                ? "bg-blue-500/10 border-blue-500/30 text-blue-400"
-                                : o.status === "cancelled"
-                                  ? "bg-red-500/10 border-red-500/30 text-red-400"
-                                  : "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                          }`}
+                          className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${getOrderStatusClass(
+                            o.orderStatus,
+                          )}`}
                         >
-                          {o.status}
+                          {o.orderStatus}
                         </span>
                         <div className="text-xs font-bold mt-2 text-primary">₹{o.total}</div>
                       </div>
@@ -279,7 +263,17 @@ function TrackPage() {
                         })}
                       </p>
                     </div>
-                    {foundOrder.status !== "cancelled" && (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span
+                        className={`rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest ${getOrderStatusClass(foundOrder.orderStatus)}`}
+                      >
+                        {foundOrder.orderStatus}
+                      </span>
+                      <span className="rounded-full border border-border/60 bg-secondary/40 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        {foundOrder.paymentStatus}
+                      </span>
+                    </div>
+                    {foundOrder.orderStatus !== "Cancelled" && (
                       <div className="text-right">
                         <span className="text-xs text-muted-foreground uppercase tracking-widest block">
                           Est. Delivery
@@ -291,7 +285,7 @@ function TrackPage() {
                     )}
                   </div>
 
-                  {foundOrder.status === "cancelled" ? (
+                  {foundOrder.orderStatus === "Cancelled" ? (
                     <div className="flex items-center gap-3 p-4 rounded-xl border border-red-500/30 bg-red-500/5 text-red-400">
                       <AlertCircle className="h-5 w-5 shrink-0 animate-pulse" />
                       <div className="text-sm">
@@ -317,12 +311,14 @@ function TrackPage() {
                         style={{
                           width:
                             currentStep === 1
-                              ? "16%"
+                              ? "0%"
                               : currentStep === 2
-                                ? "60%"
+                                ? "33%"
                                 : currentStep === 3
-                                  ? "94%"
-                                  : "0%",
+                                  ? "66%"
+                                  : currentStep === 4
+                                    ? "100%"
+                                    : "0%",
                         }}
                       />
 
@@ -336,28 +332,46 @@ function TrackPage() {
                         />
                         {/* Stage 2: Processing */}
                         <TimelineNode
-                          icon={<Loader2 className={currentStep === 1 ? "animate-spin" : ""} />}
+                          icon={<Loader2 className={currentStep === 2 ? "animate-spin" : ""} />}
                           label="Processing"
                           done={currentStep >= 2}
-                          active={currentStep === 1}
+                          active={currentStep === 2}
                         />
                         {/* Stage 3: Shipped */}
                         <TimelineNode
                           icon={<Truck />}
                           label="Shipped"
                           done={currentStep >= 3}
-                          active={currentStep === 2}
+                          active={currentStep === 3}
                         />
                         {/* Stage 4: Delivered */}
                         <TimelineNode
                           icon={<CheckCircle2 />}
                           label="Delivered"
-                          done={currentStep === 3}
-                          active={currentStep === 3}
+                          done={currentStep === 4}
+                          active={currentStep === 4}
                         />
                       </div>
                     </div>
                   )}
+                  <div className="mt-4 grid gap-3 rounded-xl border border-border/50 bg-secondary/20 p-4 text-sm sm:grid-cols-2">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                        Tracking Number
+                      </div>
+                      <div className="mt-1 font-mono font-bold text-foreground">
+                        {foundOrder.trackingNumber || "Assigned after dispatch"}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                        Payment Review
+                      </div>
+                      <div className="mt-1 font-bold text-foreground">
+                        {foundOrder.paymentStatus}
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Shipping Address & Order Summary */}
