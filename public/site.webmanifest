@@ -1,0 +1,10 @@
+{
+  "name": "RepCore — Pro Training Gear",
+  "short_name": "RepCore",
+  "description": "Pro-grade training gear built for athletes who treat the gym like a job site.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1410",
+  "theme_color": "#1a1410",
+  "lang": "en-IN"
+}

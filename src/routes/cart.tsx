@@ -7,15 +7,15 @@ import { useCart } from "@/lib/cart";
 import { useEffect, useState } from "react";
 import { useReveal } from "@/hooks/use-animations";
 import { toast } from "sonner";
+import { createNoIndexHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/cart")({
-  head: () => ({
-    meta: [
-      { title: "Your Cart — RepCore" },
-      { name: "description", content: "Review your RepCore gear before checkout." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: () =>
+    createNoIndexHead(
+      "Your Cart",
+      "Review your RepCore training gear before checkout.",
+      "/cart",
+    ),
   component: CartPage,
 });
 

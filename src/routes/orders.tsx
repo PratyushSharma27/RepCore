@@ -6,15 +6,15 @@ import { SiteLayout } from "@/components/site-layout";
 import { useAuth } from "@/lib/auth-context";
 import { fetchOrders, getOrdersList, type Order } from "@/lib/orders";
 import { useReveal } from "@/hooks/use-animations";
+import { createNoIndexHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/orders")({
-  head: () => ({
-    meta: [
-      { title: "My Orders — RepCore" },
-      { name: "description", content: "Review your RepCore training gear purchase history and tracking details." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: () =>
+    createNoIndexHead(
+      "My Orders",
+      "Review your RepCore training gear purchase history and tracking details.",
+      "/orders",
+    ),
   component: OrdersPage,
 });
 

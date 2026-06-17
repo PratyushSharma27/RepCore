@@ -4,19 +4,22 @@ import { ArrowRight, Flame, ShieldCheck, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteLayout } from "@/components/site-layout";
 import { getProductsList, fetchProducts, type Product } from "@/lib/products";
+import { createPageHead, websiteJsonLd } from "@/lib/seo";
 
 import { useReveal, useStaggerReveal, useTilt3D, useCountUp } from "@/hooks/use-animations";
 import { useEffect, useState } from "react";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "RepCore — Gear Built for Work" },
-      { name: "description", content: "Pro-grade training gear: resistance bands, lifting straps, wrist support, grip strengtheners, shakers, foam rollers and massage guns." },
-      { property: "og:title", content: "RepCore — Gear Built for Work" },
-      { property: "og:description", content: "Pro-grade training gear engineered for athletes who treat the gym like a job site." },
-    ],
-  }),
+  head: () =>
+    createPageHead({
+      title: "Pro Training Gear for Serious Athletes",
+      description:
+        "RepCore builds pro-grade training gear — resistance bands, lifting straps, wrist wraps, grip strengtheners, shakers, foam rollers and massage guns for athletes who train hard.",
+      path: "/",
+      keywords:
+        "training gear, gym equipment, resistance bands, lifting straps, wrist wraps, grip strengthener, protein shaker, foam roller, massage gun, RepCore",
+      jsonLd: websiteJsonLd(),
+    }),
   component: Index,
 });
 

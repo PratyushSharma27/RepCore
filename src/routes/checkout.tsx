@@ -10,15 +10,15 @@ import { useAuth } from "@/lib/auth-context";
 import { saveOrder, getOrdersList, ORDERS_STORAGE_KEY, type Order } from "@/lib/orders";
 import { toast } from "sonner";
 import { useReveal, useTilt3D } from "@/hooks/use-animations";
+import { createNoIndexHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/checkout")({
-  head: () => ({
-    meta: [
-      { title: "Checkout — RepCore" },
-      { name: "description", content: "Secure checkout for your RepCore order." },
-      { name: "robots", content: "noindex" },
-    ],
-  }),
+  head: () =>
+    createNoIndexHead(
+      "Secure Checkout",
+      "Complete your RepCore order with secure checkout.",
+      "/checkout",
+    ),
   component: CheckoutPage,
 });
 

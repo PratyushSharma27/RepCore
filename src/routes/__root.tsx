@@ -7,13 +7,21 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
 import { CartProvider } from "../lib/cart";
 import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "../components/ui/sonner";
+import {
+  DEFAULT_DESCRIPTION,
+  DEFAULT_OG_IMAGE,
+  SITE_NAME,
+  SITE_URL,
+  formatPageTitle,
+  organizationJsonLd,
+  jsonLdScript,
+} from "../lib/seo";
 
 function NotFoundComponent() {
   return (
@@ -40,9 +48,6 @@ function NotFoundComponent() {
 function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   console.error(error);
   const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -75,24 +80,36 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   );
 }
 
+const defaultTitle = formatPageTitle(`${SITE_NAME} — Pro Training Gear`);
+
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "RepCore — Pro Training Gear" },
-      { name: "description", content: "RepCore builds pro-grade training gear: resistance bands, lifting straps, wrist support, grip strengtheners, shakers, foam rollers and massage guns." },
-      { name: "author", content: "RepCore" },
-      { property: "og:title", content: "RepCore — Pro Training Gear" },
-      { property: "og:description", content: "Pro-grade training tools built for athletes who treat the gym like a job site." },
+      { title: defaultTitle },
+      { name: "description", content: DEFAULT_DESCRIPTION },
+      { name: "author", content: SITE_NAME },
+      { name: "theme-color", content: "#1a1410" },
+      { name: "format-detection", content: "telephone=no" },
+      { property: "og:site_name", content: SITE_NAME },
+      { property: "og:title", content: defaultTitle },
+      { property: "og:description", content: DEFAULT_DESCRIPTION },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: SITE_URL },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { property: "og:locale", content: "en_IN" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: defaultTitle },
+      { name: "twitter:description", content: DEFAULT_DESCRIPTION },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
     links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
+      { rel: "stylesheet", href: appCss },
+      { rel: "canonical", href: SITE_URL },
+      { rel: "icon", href: "/og.jpg", type: "image/jpeg" },
+      { rel: "apple-touch-icon", href: "/og.jpg" },
+      { rel: "manifest", href: "/site.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -100,6 +117,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap",
       },
     ],
+    scripts: [jsonLdScript(organizationJsonLd())],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -109,7 +127,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <head>
         <HeadContent />
       </head>

@@ -9,16 +9,17 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { useReveal, useStaggerReveal } from "@/hooks/use-animations";
+import { createPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      { title: "Contact RepCore" },
-      { name: "description", content: "Get in touch with RepCore support, wholesale and press." },
-      { property: "og:title", content: "Contact RepCore" },
-      { property: "og:description", content: "We answer every message within 24 hours." },
-    ],
-  }),
+  head: () =>
+    createPageHead({
+      title: "Contact RepCore",
+      description:
+        "Contact RepCore for product support, wholesale inquiries, and press requests. We respond within 24 hours.",
+      path: "/contact",
+      keywords: "RepCore support, wholesale training gear, fitness equipment contact",
+    }),
   component: ContactPage,
 });
 

@@ -17,15 +17,15 @@ import { fetchOrders, updateOrderStatus, saveOrder, getOrdersList, ORDERS_STORAG
 import { fetchCustomers, getCustomersList, deleteCustomer, CUSTOMERS_STORAGE_KEY, type Customer } from "@/lib/customers";
 import { fetchCategories, saveCategory, deleteCategory, getCategoriesList, type Category } from "@/lib/categories";
 import { useReveal, useTilt3D, useStaggerReveal } from "@/hooks/use-animations";
+import { createNoIndexHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/admin")({
-  head: () => ({
-    meta: [
-      { title: "Admin — RepCore" },
-      { name: "description", content: "Internal admin dashboard for managing the RepCore catalog and coupons." },
-      { name: "robots", content: "noindex,nofollow" },
-    ],
-  }),
+  head: () =>
+    createNoIndexHead(
+      "Admin Dashboard",
+      "Internal admin dashboard for managing the RepCore catalog and coupons.",
+      "/admin",
+    ),
   component: AdminPage,
 });
 

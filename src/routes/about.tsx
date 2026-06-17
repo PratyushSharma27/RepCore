@@ -4,16 +4,17 @@ import { useReveal, useCountUp, useStaggerReveal } from "@/hooks/use-animations"
 import { useEffect, useState } from "react";
 import pratyushImg from "@/assets/founder-pratyush.png";
 import vishalImg from "@/assets/founder-vishal.png";
+import { createPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({
-    meta: [
-      { title: "About RepCore — Gear Built for Work" },
-      { name: "description", content: "RepCore designs training tools with the athletes who use them. Heavy materials, honest engineering, lifetime backing." },
-      { property: "og:title", content: "About RepCore" },
-      { property: "og:description", content: "Built with athletes. Tested under load. Backed for life." },
-    ],
-  }),
+  head: () =>
+    createPageHead({
+      title: "About RepCore — Gear Built for Work",
+      description:
+        "RepCore designs training tools with the athletes who use them. Heavy materials, honest engineering, and lifetime backing on every product.",
+      path: "/about",
+      keywords: "RepCore story, training gear brand, fitness equipment company, athlete-founded brand",
+    }),
   component: AboutPage,
 });
 

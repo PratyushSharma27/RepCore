@@ -8,24 +8,43 @@ import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { useNavigate } from "@tanstack/react-router";
 import { useReveal, useTilt3D, useStaggerReveal } from "@/hooks/use-animations";
+import {
+  absoluteUrl,
+  breadcrumbJsonLd,
+  createPageHead,
+  createNoIndexHead,
+  productJsonLd,
+} from "@/lib/seo";
 
 export const Route = createFileRoute("/products_/$slug")({
   loader: ({ params }): { product: Product | null } => {
     const product = getProduct(params.slug);
     return { product };
   },
-  head: ({ loaderData }) => {
+  head: ({ loaderData, params }) => {
     const p = loaderData?.product;
-    if (!p) return { meta: [{ title: "Product not found — RepCore" }] };
-    return {
-      meta: [
-        { title: `${p.name} — RepCore` },
-        { name: "description", content: p.description.slice(0, 155) },
-        { property: "og:title", content: `${p.name} — RepCore` },
-        { property: "og:description", content: p.tagline },
-        { property: "og:image", content: p.image },
+    if (!p) {
+      return createNoIndexHead("Product Not Found", "The requested RepCore product could not be found.", `/products/${params.slug}`);
+    }
+
+    const description = `${p.tagline} ${p.description}`.slice(0, 160);
+
+    return createPageHead({
+      title: `${p.name} — ${p.category} Training Gear`,
+      description,
+      path: `/products/${p.slug}`,
+      ogType: "product",
+      ogImage: absoluteUrl(p.image),
+      keywords: `${p.name}, ${p.category}, RepCore, buy ${p.name.toLowerCase()}, training gear India`,
+      jsonLd: [
+        productJsonLd(p),
+        breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "Shop", path: "/products" },
+          { name: p.name, path: `/products/${p.slug}` },
+        ]),
       ],
-    };
+    });
   },
   component: ProductPage,
 });

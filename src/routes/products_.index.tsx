@@ -9,16 +9,18 @@ import { getProductsList, fetchProducts, type Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { toast } from "sonner";
 import { useReveal, useTilt3D } from "@/hooks/use-animations";
+import { createPageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/products_/")({
-  head: () => ({
-    meta: [
-      { title: "Shop All Gear — RepCore" },
-      { name: "description", content: "Browse all RepCore training equipment: resistance bands, lifting straps, wrist support, grip strengtheners, shakers, foam rollers and massage guns." },
-      { property: "og:title", content: "Shop All Gear — RepCore" },
-      { property: "og:description", content: "Pro-grade training equipment built for serious athletes." },
-    ],
-  }),
+  head: () =>
+    createPageHead({
+      title: "Shop All Training Gear",
+      description:
+        "Browse all RepCore training equipment: resistance bands, lifting straps, wrist wraps, grip strengtheners, protein shakers, foam rollers and massage guns.",
+      path: "/products",
+      keywords:
+        "buy training gear, gym accessories, resistance bands, lifting straps, wrist wraps, massage gun, foam roller",
+    }),
   component: ProductsPage,
 });
 

@@ -9,6 +9,7 @@ import { useAuth } from "@/lib/auth-context";
 import { fetchOrders, getOrdersList, type Order } from "@/lib/orders";
 import { useReveal } from "@/hooks/use-animations";
 import { z } from "zod";
+import { createNoIndexHead } from "@/lib/seo";
 
 const trackSearchSchema = z.object({
   id: z.string().optional(),
@@ -16,12 +17,12 @@ const trackSearchSchema = z.object({
 
 export const Route = createFileRoute("/track")({
   validateSearch: (search) => trackSearchSchema.parse(search),
-  head: () => ({
-    meta: [
-      { title: "Track Your Order — RepCore" },
-      { name: "description", content: "Track your RepCore athletic training gear package status in real-time." },
-    ],
-  }),
+  head: () =>
+    createNoIndexHead(
+      "Track Your Order",
+      "Track your RepCore training gear order status in real time.",
+      "/track",
+    ),
   component: TrackPage,
 });
 
