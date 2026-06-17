@@ -309,6 +309,15 @@ const isMissingColumnError = (err: unknown) => {
   return maybeErr.code === "PGRST204" || /column|schema cache/i.test(maybeErr.message || "");
 };
 
+const isMissingRelationError = (err: unknown) => {
+  if (!err || typeof err !== "object") return false;
+  const maybeErr = err as { code?: string; message?: string };
+  return (
+    maybeErr.code === "42P01" ||
+    /relation .* does not exist|could not find the table/i.test(maybeErr.message || "")
+  );
+};
+
 const normalizeOrder = (raw: Partial<Order>): Order => {
   const orderStatus = normalizeOrderStatus(raw.orderStatus || raw.status);
   return {
@@ -442,7 +451,7 @@ export const fetchOrders = async ({ fallbackToCache = true }: FetchOrdersOptions
 export const saveOrder = async (o: Order): Promise<boolean> => {
   try {
     const supabase = requireSupabase();
-    const fullOrder = {
+    const baseOrder = {
       id: o.id,
       customer_email: o.customerEmail,
       customer_name: o.customerName,
@@ -463,33 +472,36 @@ export const saveOrder = async (o: Order): Promise<boolean> => {
       shipping_address: o.shippingAddress,
       created_at: o.createdAt,
     };
+    const fullOrder = {
+      ...baseOrder,
+      items: o.items,
+    };
     const { error } = await supabase.from("orders").upsert(fullOrder);
     if (error) {
       if (isMissingColumnError(error)) {
         const legacyOrder = {
-          id: o.id,
-          customer_email: o.customerEmail,
-          customer_name: o.customerName,
-          phone: o.shippingAddress.phone,
-          email: o.customerEmail,
-          address: o.shippingAddress.address,
-          city: o.shippingAddress.city,
-          state: o.shippingAddress.state || "",
-          pincode: o.shippingAddress.postalCode,
-          total_amount: o.total,
-          payment_status: o.paymentStatus,
-          status: o.status,
-          shipping_address: o.shippingAddress,
+          ...baseOrder,
           items: o.items,
-          created_at: o.createdAt,
         };
         const { error: legacyError } = await supabase.from("orders").upsert(legacyOrder);
-        if (legacyError) throw legacyError;
+        if (legacyError) {
+          if (!isMissingColumnError(legacyError)) throw legacyError;
+          const { error: minimalError } = await supabase.from("orders").upsert(baseOrder);
+          if (minimalError) throw minimalError;
+        }
       } else {
         throw error;
       }
     }
-    await supabase.from("order_items").delete().eq("order_id", o.id);
+
+    const { error: deleteItemsError } = await supabase
+      .from("order_items")
+      .delete()
+      .eq("order_id", o.id);
+    if (deleteItemsError && !isMissingRelationError(deleteItemsError)) {
+      console.warn("Order saved, but existing order items could not be cleared:", deleteItemsError);
+    }
+
     const orderItems = o.items.map((item) => ({
       order_id: o.id,
       product_id: item.productId || item.slug,
@@ -499,7 +511,9 @@ export const saveOrder = async (o: Order): Promise<boolean> => {
     }));
     if (orderItems.length > 0) {
       const { error: itemError } = await supabase.from("order_items").insert(orderItems);
-      if (itemError) throw itemError;
+      if (itemError && !isMissingRelationError(itemError)) {
+        console.warn("Order saved, but order item rows could not be saved:", itemError);
+      }
     }
     return true;
   } catch (err) {
