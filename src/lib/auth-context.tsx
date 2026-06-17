@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { User } from "@supabase/supabase-js";
-import { supabase } from "./supabase";
+import type { User } from "@supabase/supabase-js";
+import { hasSupabaseConfig, requireSupabase, supabase } from "./supabase";
 import { saveCustomer } from "./customers";
 
 export type UserProfile = {
@@ -16,11 +16,19 @@ type AuthContextType = {
   loading: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signUp: (email: string, password: string, name: string) => Promise<{ success: boolean; error?: string }>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string,
+  ) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -36,18 +44,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: userId,
       email,
       name,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     });
   }, []);
 
   useEffect(() => {
     let active = true;
+    if (!hasSupabaseConfig || !supabase) {
+      setLoading(false);
+      return () => {
+        active = false;
+      };
+    }
+    const client = supabase;
 
     const initializeAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const {
+          data: { session },
+          error,
+        } = await client.auth.getSession();
         if (error) throw error;
-        
+
         if (session?.user && active) {
           setUser(session.user);
           await loadProfile(session.user.id, session.user.email!, session.user.user_metadata?.name);
@@ -61,9 +79,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     initializeAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription },
+    } = client.auth.onAuthStateChange(async (event, session) => {
       if (!active) return;
-      
+
       if (session?.user) {
         setUser(session.user);
         await loadProfile(session.user.id, session.user.email!, session.user.user_metadata?.name);
@@ -80,8 +100,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
   }, [loadProfile]);
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    email: string,
+    password: string,
+  ): Promise<{ success: boolean; error?: string }> => {
     try {
+      const supabase = requireSupabase();
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         return { success: false, error: error.message };
@@ -92,12 +116,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true };
       }
       return { success: false, error: "Failed to retrieve user session." };
-    } catch (err: any) {
-      return { success: false, error: err.message || "An unexpected sign-in error occurred." };
+    } catch (err: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(err, "An unexpected sign-in error occurred."),
+      };
     }
   };
 
-  const signUp = async (email: string, password: string, name: string): Promise<{ success: boolean; error?: string }> => {
+  const signUp = async (
+    email: string,
+    password: string,
+    name: string,
+  ): Promise<{ success: boolean; error?: string }> => {
     const cleanEmail = email.trim().toLowerCase();
     const cleanName = name.trim();
     if (!cleanEmail || !password || !cleanName) {
@@ -105,12 +136,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
 
     try {
+      const supabase = requireSupabase();
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
         password,
-        options: { data: { name: cleanName } }
+        options: { data: { name: cleanName } },
       });
-      
+
       if (error) {
         return { success: false, error: error.message };
       }
@@ -121,22 +153,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: data.user.id,
           email: cleanEmail,
           name: cleanName,
-          createdAt: new Date().toISOString()
+          createdAt: new Date().toISOString(),
         });
-        
+
         setUser(data.user);
         await loadProfile(data.user.id, cleanEmail, cleanName);
         return { success: true };
       }
       return { success: false, error: "Failed to register user." };
-    } catch (err: any) {
-      return { success: false, error: err.message || "An unexpected registration error occurred." };
+    } catch (err: unknown) {
+      return {
+        success: false,
+        error: getErrorMessage(err, "An unexpected registration error occurred."),
+      };
     }
   };
 
   const logout = async () => {
     try {
-      await supabase.auth.signOut();
+      await supabase?.auth.signOut();
     } catch (err) {
       console.warn("Supabase remote signout failed:", err);
     }

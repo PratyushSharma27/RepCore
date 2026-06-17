@@ -1,6 +1,17 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
-import { Search, Package, Truck, CheckCircle2, MapPin, AlertCircle, Calendar, ArrowLeft, Loader2, ArrowRight } from "lucide-react";
+import {
+  Search,
+  Package,
+  Truck,
+  CheckCircle2,
+  MapPin,
+  AlertCircle,
+  Calendar,
+  ArrowLeft,
+  Loader2,
+  ArrowRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,7 +41,7 @@ function TrackPage() {
   const search = Route.useSearch();
   const navigate = useNavigate();
   const { user } = useAuth();
-  
+
   const [orderIdInput, setOrderIdInput] = useState(search.id || "");
   const [loadingOrders, setLoadingOrders] = useState(false);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
@@ -47,7 +58,7 @@ function TrackPage() {
       // Synchronous local load first
       const cached = getOrdersList();
       setAllOrders(cached);
-      
+
       try {
         const dbOrders = await fetchOrders();
         setAllOrders(dbOrders);
@@ -67,7 +78,7 @@ function TrackPage() {
   useEffect(() => {
     if (search.id && allOrders.length > 0) {
       const target = allOrders.find(
-        (o) => o.id.trim().toUpperCase() === search.id!.trim().toUpperCase()
+        (o) => o.id.trim().toUpperCase() === search.id!.trim().toUpperCase(),
       );
       setFoundOrder(target || null);
       setSearched(true);
@@ -82,10 +93,11 @@ function TrackPage() {
   useEffect(() => {
     if (!search.id && user && allOrders.length > 0) {
       const userOrders = allOrders.filter(
-        (o) => o.customerEmail.toLowerCase() === user.email?.toLowerCase()
+        (o) => o.customerEmail.toLowerCase() === user.email?.toLowerCase(),
       );
       if (userOrders.length > 0) {
         navigate({
+          to: "/track",
           search: { id: userOrders[0].id },
         });
       }
@@ -96,32 +108,42 @@ function TrackPage() {
     e.preventDefault();
     const cleanId = orderIdInput.trim().toUpperCase();
     if (!cleanId) return;
-    
+
     navigate({
+      to: "/track",
       search: { id: cleanId },
     });
   };
 
   // Filter orders placed by current logged in customer
   const customerOrders = allOrders.filter(
-    (o) => user && o.customerEmail.toLowerCase() === user.email?.toLowerCase()
+    (o) => user && o.customerEmail.toLowerCase() === user.email?.toLowerCase(),
   );
 
   // Calculate dynamic shipping estimate (e.g. 3 days after creation)
   const getDeliveryEstimate = (dateStr: string) => {
     const orderDate = new Date(dateStr);
     const estimate = new Date(orderDate.setDate(orderDate.getDate() + 3));
-    return estimate.toLocaleDateString("en-IN", { weekday: "long", month: "short", day: "numeric" });
+    return estimate.toLocaleDateString("en-IN", {
+      weekday: "long",
+      month: "short",
+      day: "numeric",
+    });
   };
 
   // Determine active status stage
   const getStatusStep = (status: Order["status"]): number => {
     switch (status) {
-      case "pending": return 1; // Ordered done, Processing active
-      case "shipped": return 2; // Ordered & Processing done, Shipped active
-      case "delivered": return 3; // All done, Delivered done
-      case "cancelled": return -1;
-      default: return 0;
+      case "pending":
+        return 1; // Ordered done, Processing active
+      case "shipped":
+        return 2; // Ordered & Processing done, Shipped active
+      case "delivered":
+        return 3; // All done, Delivered done
+      case "cancelled":
+        return -1;
+      default:
+        return 0;
     }
   };
 
@@ -131,7 +153,9 @@ function TrackPage() {
     <SiteLayout>
       <section className="relative overflow-hidden border-b border-border/60 particle-field">
         <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-          <div className={`text-xs uppercase tracking-[0.3em] text-primary anim-reveal-left ${entered ? "visible" : ""}`}>
+          <div
+            className={`text-xs uppercase tracking-[0.3em] text-primary anim-reveal-left ${entered ? "visible" : ""}`}
+          >
             Real-time Status
           </div>
           <h1 className={`mt-3 text-5xl sm:text-7xl anim-hero-text ${entered ? "visible" : ""}`}>
@@ -149,7 +173,12 @@ function TrackPage() {
             </h3>
             <form onSubmit={handleTrackSubmit} className="space-y-4">
               <div>
-                <Label htmlFor="order-id" className="text-xs uppercase tracking-widest text-muted-foreground">Invoice ID</Label>
+                <Label
+                  htmlFor="order-id"
+                  className="text-xs uppercase tracking-widest text-muted-foreground"
+                >
+                  Invoice ID
+                </Label>
                 <Input
                   id="order-id"
                   required
@@ -180,27 +209,40 @@ function TrackPage() {
                   {customerOrders.map((o) => (
                     <button
                       key={o.id}
-                      onClick={() => navigate({ search: { id: o.id } })}
+                      onClick={() => navigate({ to: "/track", search: { id: o.id } })}
                       className={`group w-full text-left p-3 rounded-xl border transition-all duration-300 hover:bg-primary/5 flex justify-between items-start cursor-pointer ${
-                        search.id === o.id ? "border-primary bg-primary/5" : "border-border/40 bg-card/45"
+                        search.id === o.id
+                          ? "border-primary bg-primary/5"
+                          : "border-border/40 bg-card/45"
                       }`}
                     >
                       <div className="min-w-0 flex-1">
-                        <div className="font-mono text-xs font-bold text-foreground truncate">{o.id}</div>
+                        <div className="font-mono text-xs font-bold text-foreground truncate">
+                          {o.id}
+                        </div>
                         <div className="text-[10px] text-muted-foreground mt-1">
-                          {new Date(o.createdAt).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+                          {new Date(o.createdAt).toLocaleDateString("en-IN", {
+                            month: "short",
+                            day: "numeric",
+                          })}
                         </div>
                         <div className="text-[10px] text-primary mt-2.5 font-semibold flex items-center gap-1 group-hover:text-primary/90 transition-colors">
-                          Track Order <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
+                          Track Order{" "}
+                          <ArrowRight className="h-3 w-3 transition-transform duration-300 group-hover:translate-x-1" />
                         </div>
                       </div>
                       <div className="text-right shrink-0 ml-2">
-                        <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${
-                          o.status === "delivered" ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" :
-                          o.status === "shipped" ? "bg-blue-500/10 border-blue-500/30 text-blue-400" :
-                          o.status === "cancelled" ? "bg-red-500/10 border-red-500/30 text-red-400" :
-                          "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                        }`}>
+                        <span
+                          className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-full border ${
+                            o.status === "delivered"
+                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                              : o.status === "shipped"
+                                ? "bg-blue-500/10 border-blue-500/30 text-blue-400"
+                                : o.status === "cancelled"
+                                  ? "bg-red-500/10 border-red-500/30 text-red-400"
+                                  : "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                          }`}
+                        >
                           {o.status}
                         </span>
                         <div className="text-xs font-bold mt-2 text-primary">₹{o.total}</div>
@@ -209,7 +251,9 @@ function TrackPage() {
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground py-2">No orders placed under your account yet.</p>
+                <p className="text-xs text-muted-foreground py-2">
+                  No orders placed under your account yet.
+                </p>
               )}
             </div>
           )}
@@ -229,12 +273,17 @@ function TrackPage() {
                     <div>
                       <h2 className="display text-2xl text-primary font-black">{foundOrder.id}</h2>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Ordered on {new Date(foundOrder.createdAt).toLocaleDateString("en-IN", { dateStyle: "long" })}
+                        Ordered on{" "}
+                        {new Date(foundOrder.createdAt).toLocaleDateString("en-IN", {
+                          dateStyle: "long",
+                        })}
                       </p>
                     </div>
                     {foundOrder.status !== "cancelled" && (
                       <div className="text-right">
-                        <span className="text-xs text-muted-foreground uppercase tracking-widest block">Est. Delivery</span>
+                        <span className="text-xs text-muted-foreground uppercase tracking-widest block">
+                          Est. Delivery
+                        </span>
                         <span className="text-sm font-bold text-foreground mt-1 block">
                           {getDeliveryEstimate(foundOrder.createdAt)}
                         </span>
@@ -247,20 +296,33 @@ function TrackPage() {
                       <AlertCircle className="h-5 w-5 shrink-0 animate-pulse" />
                       <div className="text-sm">
                         <p className="font-semibold">This order has been cancelled.</p>
-                        <p className="text-xs mt-1 text-red-300/80">If you believe this is an error or need refund details, contact support@repcore.com.</p>
+                        <p className="text-xs mt-1 text-red-300/80">
+                          If you believe this is an error or need refund details, contact
+                          support@repcore.com.
+                        </p>
                       </div>
                     </div>
                   ) : (
                     /* Dynamic Progress Line */
                     <div className="relative py-8">
                       {/* Grey Connector Line */}
-                      <div aria-hidden className="absolute left-6 top-1/2 -translate-y-1/2 right-6 h-0.5 bg-border/60 rounded-full" />
+                      <div
+                        aria-hidden
+                        className="absolute left-6 top-1/2 -translate-y-1/2 right-6 h-0.5 bg-border/60 rounded-full"
+                      />
                       {/* Active Glow connector Line */}
                       <div
                         aria-hidden
                         className="absolute left-6 top-1/2 -translate-y-1/2 h-0.5 bg-primary rounded-full transition-all duration-1000 shadow-[0_0_10px_oklch(0.72_0.21_38/0.5)]"
                         style={{
-                          width: currentStep === 1 ? "16%" : currentStep === 2 ? "60%" : currentStep === 3 ? "94%" : "0%",
+                          width:
+                            currentStep === 1
+                              ? "16%"
+                              : currentStep === 2
+                                ? "60%"
+                                : currentStep === 3
+                                  ? "94%"
+                                  : "0%",
                         }}
                       />
 
@@ -307,8 +369,12 @@ function TrackPage() {
                     <div className="text-sm space-y-1 text-foreground/80 leading-relaxed">
                       <p className="font-semibold text-foreground">{foundOrder.customerName}</p>
                       <p>{foundOrder.shippingAddress?.address}</p>
-                      <p>{foundOrder.shippingAddress?.city}, {foundOrder.shippingAddress?.postalCode}</p>
-                      <p className="text-xs text-muted-foreground pt-1">{foundOrder.shippingAddress?.phone}</p>
+                      <p>
+                        {foundOrder.shippingAddress?.city}, {foundOrder.shippingAddress?.postalCode}
+                      </p>
+                      <p className="text-xs text-muted-foreground pt-1">
+                        {foundOrder.shippingAddress?.phone}
+                      </p>
                     </div>
                   </div>
 
@@ -318,10 +384,15 @@ function TrackPage() {
                     </h4>
                     <div className="space-y-3 max-h-[200px] overflow-y-auto pr-1 text-sm scrollbar-thin">
                       {foundOrder.items.map((i) => (
-                        <div key={i.slug} className="flex justify-between items-center border-b border-border/40 pb-2 last:border-0 last:pb-0">
+                        <div
+                          key={i.slug}
+                          className="flex justify-between items-center border-b border-border/40 pb-2 last:border-0 last:pb-0"
+                        >
                           <div className="min-w-0">
                             <p className="font-medium truncate">{i.name}</p>
-                            <p className="text-xs text-muted-foreground">Qty {i.qty} • ₹{i.price}</p>
+                            <p className="text-xs text-muted-foreground">
+                              Qty {i.qty} • ₹{i.price}
+                            </p>
                           </div>
                           <span className="font-bold shrink-0">₹{i.price * i.qty}</span>
                         </div>
@@ -329,7 +400,9 @@ function TrackPage() {
                     </div>
                     <div className="border-t border-border/40 pt-3 mt-3 flex justify-between items-center text-sm">
                       <span className="font-semibold">Total Invoice:</span>
-                      <span className="display font-black text-primary text-base">₹{foundOrder.total.toLocaleString("en-IN")}</span>
+                      <span className="display font-black text-primary text-base">
+                        ₹{foundOrder.total.toLocaleString("en-IN")}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -339,10 +412,15 @@ function TrackPage() {
                 <AlertCircle className="h-10 w-10 text-destructive mx-auto animate-bounce" />
                 <h3 className="display text-xl font-bold text-foreground">Invoice Not Found</h3>
                 <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                  We couldn't locate any package matching code <strong className="text-primary font-mono">{search.id}</strong>. 
-                  Double check the ID on your invoice sheet or confirmation screen.
+                  We couldn't locate any package matching code{" "}
+                  <strong className="text-primary font-mono">{search.id}</strong>. Double check the
+                  ID on your invoice sheet or confirmation screen.
                 </p>
-                <Button variant="pill" onClick={() => setOrderIdInput("")} className="btn-lift border-primary/20 text-primary">
+                <Button
+                  variant="pill"
+                  onClick={() => setOrderIdInput("")}
+                  className="btn-lift border-primary/20 text-primary"
+                >
                   Try another code
                 </Button>
               </div>
@@ -353,7 +431,8 @@ function TrackPage() {
               <Truck className="h-12 w-12 text-muted-foreground/40 mx-auto" />
               <h3 className="display text-xl">Package Tracker</h3>
               <p className="text-sm text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                Enter your Order Code in the lookup panel to track packaging stages, dynamic delivery estimates, and routing information.
+                Enter your Order Code in the lookup panel to track packaging stages, dynamic
+                delivery estimates, and routing information.
               </p>
             </div>
           )}
@@ -376,20 +455,22 @@ function TimelineNode({
 }) {
   return (
     <div className="flex flex-col items-center relative z-10">
-      <div className={`grid h-12 w-12 place-items-center rounded-full border transition-all duration-700 ${
-        done 
-          ? "bg-primary border-primary text-primary-foreground shadow-[0_0_15px_oklch(0.72_0.21_38/0.4)] scale-105" 
-          : active 
-            ? "bg-card border-primary text-primary glow-pulse scale-105"
-            : "bg-card border-border/60 text-muted-foreground/60"
-      }`}>
-        <span className="[&_svg]:h-5 [&_svg]:w-5">
-          {icon}
-        </span>
+      <div
+        className={`grid h-12 w-12 place-items-center rounded-full border transition-all duration-700 ${
+          done
+            ? "bg-primary border-primary text-primary-foreground shadow-[0_0_15px_oklch(0.72_0.21_38/0.4)] scale-105"
+            : active
+              ? "bg-card border-primary text-primary glow-pulse scale-105"
+              : "bg-card border-border/60 text-muted-foreground/60"
+        }`}
+      >
+        <span className="[&_svg]:h-5 [&_svg]:w-5">{icon}</span>
       </div>
-      <span className={`mt-3 text-xs uppercase tracking-widest transition-colors duration-500 font-semibold ${
-        done ? "text-foreground" : active ? "text-primary" : "text-muted-foreground/60"
-      }`}>
+      <span
+        className={`mt-3 text-xs uppercase tracking-widest transition-colors duration-500 font-semibold ${
+          done ? "text-foreground" : active ? "text-primary" : "text-muted-foreground/60"
+        }`}
+      >
         {label}
       </span>
     </div>

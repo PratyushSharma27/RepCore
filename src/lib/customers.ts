@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { requireSupabase } from "./supabase";
 
 export type Customer = {
   id: string;
@@ -8,11 +8,36 @@ export type Customer = {
 };
 
 export const defaultCustomers: Customer[] = [
-  { id: "CUST-PRATYUSH", email: "pratyush@tenimal.com", name: "Pratyush Sharma", createdAt: "2026-06-15T10:00:00.000Z" },
-  { id: "CUST-ARNAV", email: "arnav@tenimal.com", name: "Arnav Kapoor", createdAt: "2026-06-16T12:00:00.000Z" },
-  { id: "CUST-NEHA", email: "neha@gmail.com", name: "Neha Roy", createdAt: "2026-06-17T09:30:00.000Z" },
-  { id: "CUST-KABIR", email: "kabir@yahoo.com", name: "Kabir Singh", createdAt: "2026-06-17T15:45:00.000Z" },
-  { id: "CUST-RIYA", email: "riya@outlook.com", name: "Riya Sen", createdAt: "2026-06-18T08:15:00.000Z" }
+  {
+    id: "CUST-PRATYUSH",
+    email: "pratyush@tenimal.com",
+    name: "Pratyush Sharma",
+    createdAt: "2026-06-15T10:00:00.000Z",
+  },
+  {
+    id: "CUST-ARNAV",
+    email: "arnav@tenimal.com",
+    name: "Arnav Kapoor",
+    createdAt: "2026-06-16T12:00:00.000Z",
+  },
+  {
+    id: "CUST-NEHA",
+    email: "neha@gmail.com",
+    name: "Neha Roy",
+    createdAt: "2026-06-17T09:30:00.000Z",
+  },
+  {
+    id: "CUST-KABIR",
+    email: "kabir@yahoo.com",
+    name: "Kabir Singh",
+    createdAt: "2026-06-17T15:45:00.000Z",
+  },
+  {
+    id: "CUST-RIYA",
+    email: "riya@outlook.com",
+    name: "Riya Sen",
+    createdAt: "2026-06-18T08:15:00.000Z",
+  },
 ];
 
 export const CUSTOMERS_STORAGE_KEY = "repcore_customers_v3";
@@ -35,38 +60,37 @@ export const getCustomersList = (): Customer[] => {
 
 export const fetchCustomers = async (): Promise<Customer[]> => {
   try {
+    const supabase = requireSupabase();
     const { data, error } = await supabase
       .from("customers")
       .select("*")
       .order("created_at", { ascending: false });
-      
+
     if (error) {
       throw error;
     }
-    
+
     if (data && data.length === 0) {
       console.log("Supabase customers table is empty. Seeding defaults...");
-      const dbCusts = defaultCustomers.map(c => ({
+      const dbCusts = defaultCustomers.map((c) => ({
         id: c.id,
         email: c.email,
         name: c.name,
-        created_at: c.createdAt
+        created_at: c.createdAt,
       }));
-      const { error: seedErr } = await supabase
-        .from("customers")
-        .insert(dbCusts);
+      const { error: seedErr } = await supabase.from("customers").insert(dbCusts);
       if (seedErr) {
         console.error("Error seeding default customers to Supabase:", seedErr);
       }
       return defaultCustomers;
     }
-    
+
     if (data && data.length > 0) {
-      const parsed: Customer[] = data.map((item: any) => ({
+      const parsed: Customer[] = data.map((item) => ({
         id: item.id,
         email: item.email,
         name: item.name || "",
-        createdAt: item.created_at || new Date().toISOString()
+        createdAt: item.created_at || new Date().toISOString(),
       }));
       localStorage.setItem(CUSTOMERS_STORAGE_KEY, JSON.stringify(parsed));
       return parsed;
@@ -79,14 +103,13 @@ export const fetchCustomers = async (): Promise<Customer[]> => {
 
 export const saveCustomer = async (c: Customer): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("customers")
-      .upsert({
-        id: c.id,
-        email: c.email,
-        name: c.name,
-        created_at: c.createdAt
-      });
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("customers").upsert({
+      id: c.id,
+      email: c.email,
+      name: c.name,
+      created_at: c.createdAt,
+    });
     if (error) throw error;
     return true;
   } catch (err) {
@@ -97,10 +120,8 @@ export const saveCustomer = async (c: Customer): Promise<boolean> => {
 
 export const deleteCustomer = async (id: string): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("customers")
-      .delete()
-      .eq("id", id);
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("customers").delete().eq("id", id);
     if (error) throw error;
     return true;
   } catch (err) {
@@ -108,4 +129,3 @@ export const deleteCustomer = async (id: string): Promise<boolean> => {
     return false;
   }
 };
-

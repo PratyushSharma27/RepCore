@@ -46,7 +46,10 @@ function Index() {
   // Section reveals
   const valueProps = useReveal(0.2);
   const productSection = useReveal(0.1);
-  const { containerRef: gridRef, visibleItems: gridVisible } = useStaggerReveal(featured.length, 120);
+  const { containerRef: gridRef, visibleItems: gridVisible } = useStaggerReveal(
+    featured.length,
+    120,
+  );
   const statBand = useReveal(0.2);
   const ctaSection = useReveal(0.15);
 
@@ -58,12 +61,17 @@ function Index() {
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[600px] w-[600px] opacity-40 morph-blob"
-          style={{ background: "radial-gradient(circle, oklch(0.72 0.21 38 / 0.3), transparent 70%)" }}
+          style={{
+            background: "radial-gradient(circle, oklch(0.72 0.21 38 / 0.3), transparent 70%)",
+          }}
         />
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[400px] w-[400px] opacity-35 morph-blob"
-          style={{ background: "radial-gradient(circle, oklch(0.55 0.22 25 / 0.2), transparent 70%)", animationDelay: "-3s" }}
+          style={{
+            background: "radial-gradient(circle, oklch(0.55 0.22 25 / 0.2), transparent 70%)",
+            animationDelay: "-3s",
+          }}
         />
         <div
           aria-hidden
@@ -73,20 +81,31 @@ function Index() {
 
         <div className="relative mx-auto max-w-4xl px-4 pb-20 pt-16 sm:px-6 lg:pt-24 text-center">
           <div className="relative z-10 flex flex-col items-center justify-center">
-            <div className={`inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs uppercase tracking-widest text-primary shimmer-bg anim-reveal-left ${heroReady ? "visible" : ""}`}>
+            <div
+              className={`inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/5 px-3 py-1 text-xs uppercase tracking-widest text-primary shimmer-bg anim-reveal-left ${heroReady ? "visible" : ""}`}
+            >
               <span className="h-2 w-2 rounded-full bg-primary glow-pulse" /> 2026 Collection Drop
             </div>
-            
-            <h1 className={`mt-8 text-[12vw] leading-[0.9] sm:text-[90px] lg:text-[110px] tracking-tight anim-hero-text ${heroReady ? "visible" : ""}`}>
-              TRAIN. LIFT. <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-glow to-orange-400 text-glow">RECOVER.</span>
+
+            <h1
+              className={`mt-8 text-[12vw] leading-[0.9] sm:text-[90px] lg:text-[110px] tracking-tight anim-hero-text ${heroReady ? "visible" : ""}`}
+            >
+              TRAIN. LIFT.{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary-glow to-orange-400 text-glow">
+                RECOVER.
+              </span>
             </h1>
-            
-            <p className={`mt-8 max-w-xl text-base sm:text-lg text-muted-foreground/90 leading-relaxed anim-reveal-up anim-delay-3 ${heroReady ? "visible" : ""}`}>
-              RepCore builds the small, vital tools that survive heavy training — engineered with the
-              athletes who treat the gym like a job site.
+
+            <p
+              className={`mt-8 max-w-xl text-base sm:text-lg text-muted-foreground/90 leading-relaxed anim-reveal-up anim-delay-3 ${heroReady ? "visible" : ""}`}
+            >
+              RepCore builds the small, vital tools that survive heavy training — engineered with
+              the athletes who treat the gym like a job site.
             </p>
-            
-            <div className={`mt-8 flex flex-wrap justify-center items-center gap-4 anim-reveal-up anim-delay-5 ${heroReady ? "visible" : ""}`}>
+
+            <div
+              className={`mt-8 flex flex-wrap justify-center items-center gap-4 anim-reveal-up anim-delay-5 ${heroReady ? "visible" : ""}`}
+            >
               <Button variant="hero" size="xl" asChild className="btn-lift glow-pulse">
                 <Link to="/products">
                   Shop the Gear <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -97,7 +116,9 @@ function Index() {
               </Button>
             </div>
 
-            <div className={`mt-16 w-full max-w-2xl rounded-2xl border border-border/40 bg-card/25 p-8 backdrop-blur-md grid grid-cols-3 gap-6 anim-reveal-up anim-delay-7 ${heroReady ? "visible" : ""}`}>
+            <div
+              className={`mt-16 w-full max-w-2xl rounded-2xl border border-border/40 bg-card/25 p-8 backdrop-blur-md grid grid-cols-3 gap-6 anim-reveal-up anim-delay-7 ${heroReady ? "visible" : ""}`}
+            >
               <AnimStat value="120k+" numValue={120} suffix="k+" label="Active Athletes" />
               <AnimStat value="98%" numValue={98} suffix="%" label="User Rating" />
               <AnimStat value="7" numValue={7} suffix="" label="Core Tools" />
@@ -112,28 +133,53 @@ function Index() {
         className="border-b border-border/60 bg-card/30 section-glow-divider"
       >
         <div className="mx-auto grid max-w-7xl gap-px overflow-hidden md:grid-cols-3">
-          <ValueProp icon={<Flame className="h-5 w-5" />} title="Built Heavy" desc="Reinforced stitching, dense foam, aluminum chassis. Made to outlast you." visible={valueProps.visible} delay={0} />
-          <ValueProp icon={<ShieldCheck className="h-5 w-5" />} title="Lifetime Guarantee" desc="If our gear breaks under honest training, we replace it. No questions." visible={valueProps.visible} delay={1} />
-          <ValueProp icon={<Zap className="h-5 w-5" />} title="Fast Free Shipping" desc="Orders ship in 24 hours. Free over $50, worldwide tracked." visible={valueProps.visible} delay={2} />
+          <ValueProp
+            icon={<Flame className="h-5 w-5" />}
+            title="Built Heavy"
+            desc="Reinforced stitching, dense foam, aluminum chassis. Made to outlast you."
+            visible={valueProps.visible}
+            delay={0}
+          />
+          <ValueProp
+            icon={<ShieldCheck className="h-5 w-5" />}
+            title="Lifetime Guarantee"
+            desc="If our gear breaks under honest training, we replace it. No questions."
+            visible={valueProps.visible}
+            delay={1}
+          />
+          <ValueProp
+            icon={<Zap className="h-5 w-5" />}
+            title="Fast Free Shipping"
+            desc="Orders ship in 24 hours. Free over $50, worldwide tracked."
+            visible={valueProps.visible}
+            delay={2}
+          />
         </div>
       </section>
 
       {/* PRODUCT GRID */}
-      <section
-        ref={productSection.ref}
-        className="mx-auto max-w-7xl px-4 py-20 sm:px-6"
-      >
-        <div className={`flex items-end justify-between gap-4 anim-reveal-up ${productSection.visible ? "visible" : ""}`}>
+      <section ref={productSection.ref} className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
+        <div
+          className={`flex items-end justify-between gap-4 anim-reveal-up ${productSection.visible ? "visible" : ""}`}
+        >
           <div>
-            <div className="text-xs uppercase tracking-[0.3em] text-primary shimmer-bg inline-block px-2 py-1 rounded-full">The Lineup</div>
+            <div className="text-xs uppercase tracking-[0.3em] text-primary shimmer-bg inline-block px-2 py-1 rounded-full">
+              The Lineup
+            </div>
             <h2 className="mt-3 text-5xl sm:text-7xl">Seven tools. Zero filler.</h2>
           </div>
-          <Link to="/products" className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline-flex hover-underline-anim">
+          <Link
+            to="/products"
+            className="hidden text-sm text-muted-foreground hover:text-foreground sm:inline-flex hover-underline-anim"
+          >
             View all →
           </Link>
         </div>
 
-        <div ref={gridRef} className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 perspective-container">
+        <div
+          ref={gridRef}
+          className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 perspective-container"
+        >
           {featured.map((p, i) => (
             <ProductCard key={p.slug} product={p} visible={gridVisible[i]} index={i} />
           ))}
@@ -141,15 +187,21 @@ function Index() {
       </section>
 
       {/* BIG STAT BAND */}
-      <section ref={statBand.ref} className="border-y border-border/60 bg-card/40 section-glow-divider">
+      <section
+        ref={statBand.ref}
+        className="border-y border-border/60 bg-card/40 section-glow-divider"
+      >
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2">
           <div className={`anim-reveal-left ${statBand.visible ? "visible" : ""}`}>
             <div className="text-xs uppercase tracking-[0.3em] text-primary">Why RepCore</div>
             <h3 className="mt-4 text-5xl sm:text-6xl">
-              We make gear <span className="text-primary text-glow">for the set</span>, not the shelf.
+              We make gear <span className="text-primary text-glow">for the set</span>, not the
+              shelf.
             </h3>
           </div>
-          <p className={`self-end text-lg text-muted-foreground anim-reveal-right anim-delay-2 ${statBand.visible ? "visible" : ""}`}>
+          <p
+            className={`self-end text-lg text-muted-foreground anim-reveal-right anim-delay-2 ${statBand.visible ? "visible" : ""}`}
+          >
             Every product in our line is tested with real lifters, in real gyms, under real load —
             then tested again. We ship the version that survives.
           </p>
@@ -158,7 +210,9 @@ function Index() {
 
       {/* CTA */}
       <section ref={ctaSection.ref} className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-        <div className={`relative overflow-hidden rounded-3xl border border-border/60 bg-card p-10 sm:p-16 particle-field card-3d anim-reveal-scale ${ctaSection.visible ? "visible" : ""}`}>
+        <div
+          className={`relative overflow-hidden rounded-3xl border border-border/60 bg-card p-10 sm:p-16 particle-field card-3d anim-reveal-scale ${ctaSection.visible ? "visible" : ""}`}
+        >
           {/* Animated glow orbs */}
           <div
             aria-hidden
@@ -168,7 +222,10 @@ function Index() {
           <div
             aria-hidden
             className="pointer-events-none absolute -left-20 -bottom-20 h-64 w-64 rounded-full opacity-30 morph-blob"
-            style={{ background: "radial-gradient(circle, oklch(0.55 0.22 25 / 0.4), transparent 70%)", animationDelay: "-3s" }}
+            style={{
+              background: "radial-gradient(circle, oklch(0.55 0.22 25 / 0.4), transparent 70%)",
+              animationDelay: "-3s",
+            }}
           />
           <div className="relative">
             <h3 className="text-5xl sm:text-7xl">Ready to train heavy?</h3>
@@ -190,11 +247,23 @@ function Index() {
 }
 
 /* ─── Animated counter stat ─────────────────────────────── */
-function AnimStat({ numValue, suffix, label }: { value: string; numValue: number; suffix: string; label: string }) {
+function AnimStat({
+  numValue,
+  suffix,
+  label,
+}: {
+  value: string;
+  numValue: number;
+  suffix: string;
+  label: string;
+}) {
   const { ref, value } = useCountUp(numValue, 1800);
   return (
     <div ref={ref}>
-      <div className="display text-4xl text-foreground">{value}{suffix}</div>
+      <div className="display text-4xl text-foreground">
+        {value}
+        {suffix}
+      </div>
       <div className="mt-1 text-[11px] uppercase tracking-widest text-muted-foreground">
         <span className="mr-1 inline-block h-1 w-1 rounded-full bg-primary align-middle" />
         {label}
@@ -203,12 +272,16 @@ function AnimStat({ numValue, suffix, label }: { value: string; numValue: number
   );
 }
 
-
-
-
-
 /* ─── 3D product card ───────────────────────────────────── */
-function ProductCard({ product: p, visible, index }: { product: typeof products[0]; visible: boolean; index: number }) {
+function ProductCard({
+  product: p,
+  visible,
+  index,
+}: {
+  product: Product;
+  visible: boolean;
+  index: number;
+}) {
   const tiltRef = useTilt3D(8);
   return (
     <div
@@ -216,7 +289,9 @@ function ProductCard({ product: p, visible, index }: { product: typeof products[
       className={`tilt-3d gradient-border-hover ${visible ? "" : "opacity-0"}`}
       style={{
         opacity: visible ? 1 : 0,
-        animation: visible ? `tilt-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${index * 0.12}s forwards` : "none",
+        animation: visible
+          ? `tilt-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) ${index * 0.12}s forwards`
+          : "none",
       }}
     >
       <Link
@@ -244,8 +319,12 @@ function ProductCard({ product: p, visible, index }: { product: typeof products[
             <div className="mt-1 text-xs text-muted-foreground">{p.tagline}</div>
           </div>
           <div className="text-right">
-            <div className="text-lg font-semibold text-primary">₹{p.price.toLocaleString("en-IN")}</div>
-            <div className="text-[10px] uppercase tracking-widest text-muted-foreground transition-transform duration-300 group-hover:translate-x-1">Shop →</div>
+            <div className="text-lg font-semibold text-primary">
+              ₹{p.price.toLocaleString("en-IN")}
+            </div>
+            <div className="text-[10px] uppercase tracking-widest text-muted-foreground transition-transform duration-300 group-hover:translate-x-1">
+              Shop →
+            </div>
           </div>
         </div>
       </Link>
@@ -254,7 +333,19 @@ function ProductCard({ product: p, visible, index }: { product: typeof products[
 }
 
 /* ─── Value prop with animation ─────────────────────────── */
-function ValueProp({ icon, title, desc, visible, delay }: { icon: React.ReactNode; title: string; desc: string; visible: boolean; delay: number }) {
+function ValueProp({
+  icon,
+  title,
+  desc,
+  visible,
+  delay,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  visible: boolean;
+  delay: number;
+}) {
   return (
     <div
       className={`bg-background p-8 anim-reveal-rotate ${visible ? "visible" : ""}`}

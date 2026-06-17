@@ -1,5 +1,3 @@
-
-
 import bands from "@/assets/p-bands.jpg";
 import straps from "@/assets/p-straps.jpg";
 import wrist from "@/assets/p-wrist.jpg";
@@ -7,7 +5,7 @@ import grip from "@/assets/p-grip.jpg";
 import shaker from "@/assets/p-shaker.jpg";
 import foam from "@/assets/p-foam.jpg";
 import gun from "@/assets/p-gun.jpg";
-import { supabase } from "./supabase";
+import { requireSupabase } from "./supabase";
 
 export type Product = {
   slug: string;
@@ -169,7 +167,6 @@ export const products: Product[] = [
       { label: "Weight", value: "480 g" },
     ],
   },
-
 ];
 
 export const PRODUCTS_STORAGE_KEY = "repcore_products_v2";
@@ -196,21 +193,18 @@ export const getProduct = (slug: string) => {
 
 export const fetchProducts = async (): Promise<Product[]> => {
   try {
-    const { data, error } = await supabase
-      .from("products")
-      .select("*");
-      
+    const supabase = requireSupabase();
+    const { data, error } = await supabase.from("products").select("*");
+
     if (error) {
       // If table doesn't exist, we fall back to localStorage/static list
       throw error;
     }
-    
+
     // Auto-seed if database returns exactly 0 records (table created but empty)
     if (data && data.length === 0) {
       console.log("Supabase products table is empty. Seeding defaults...");
-      const { error: seedErr } = await supabase
-        .from("products")
-        .insert(products);
+      const { error: seedErr } = await supabase.from("products").insert(products);
       if (seedErr) {
         console.error("Error seeding default products to Supabase:", seedErr);
       } else {
@@ -218,9 +212,9 @@ export const fetchProducts = async (): Promise<Product[]> => {
       }
       return products;
     }
-    
+
     if (data && data.length > 0) {
-      const parsed: Product[] = data.map((item: any) => ({
+      const parsed: Product[] = data.map((item) => ({
         slug: item.slug,
         name: item.name,
         tagline: item.tagline || "",
@@ -242,19 +236,18 @@ export const fetchProducts = async (): Promise<Product[]> => {
 
 export const saveProduct = async (p: Product): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("products")
-      .upsert({
-        slug: p.slug,
-        name: p.name,
-        tagline: p.tagline,
-        price: p.price,
-        category: p.category,
-        image: p.image,
-        description: p.description,
-        features: p.features,
-        specs: p.specs
-      });
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("products").upsert({
+      slug: p.slug,
+      name: p.name,
+      tagline: p.tagline,
+      price: p.price,
+      category: p.category,
+      image: p.image,
+      description: p.description,
+      features: p.features,
+      specs: p.specs,
+    });
     if (error) throw error;
     return true;
   } catch (err) {
@@ -265,10 +258,8 @@ export const saveProduct = async (p: Product): Promise<boolean> => {
 
 export const deleteProduct = async (slug: string): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("products")
-      .delete()
-      .eq("slug", slug);
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("products").delete().eq("slug", slug);
     if (error) throw error;
     return true;
   } catch (err) {

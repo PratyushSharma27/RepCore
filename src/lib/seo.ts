@@ -6,9 +6,12 @@ export const SITE_URL = (import.meta.env.VITE_SITE_URL ?? "https://repcore.onlin
   /\/$/,
   "",
 );
+export const SITE_LOGO = `${SITE_URL}/logo.png`;
 export const DEFAULT_OG_IMAGE = `${SITE_URL}/og.jpg`;
 export const DEFAULT_DESCRIPTION =
   "Shop pro-grade training gear at RepCore — resistance bands, lifting straps, wrist wraps, grip strengtheners, shakers, foam rollers and massage guns built for serious athletes.";
+export const DEFAULT_KEYWORDS =
+  "RepCore, gym equipment India, pro training gear, resistance bands, lifting straps, wrist wraps, hand gripper, protein shaker, foam roller, massage gun, fitness accessories";
 
 export type PageSeoOptions = {
   title: string;
@@ -46,8 +49,8 @@ export function createPageHead(options: PageSeoOptions) {
   const meta = [
     { title: fullTitle },
     { name: "description", content: options.description },
-    ...(options.keywords ? [{ name: "keywords", content: options.keywords }] : []),
-    ...(options.robots ? [{ name: "robots", content: options.robots }] : []),
+    { name: "keywords", content: options.keywords ?? DEFAULT_KEYWORDS },
+    { name: "robots", content: options.robots ?? "index, follow, max-image-preview:large" },
     { name: "author", content: SITE_NAME },
     { name: "application-name", content: SITE_NAME },
     { property: "og:site_name", content: SITE_NAME },
@@ -57,6 +60,8 @@ export function createPageHead(options: PageSeoOptions) {
     { property: "og:url", content: url },
     { property: "og:image", content: ogImage },
     { property: "og:image:alt", content: `${SITE_NAME} — ${options.title}` },
+    { property: "og:image:width", content: "1080" },
+    { property: "og:image:height", content: "1920" },
     { property: "og:locale", content: "en_IN" },
     { name: "twitter:card", content: "summary_large_image" },
     { name: "twitter:title", content: fullTitle },
@@ -67,13 +72,9 @@ export function createPageHead(options: PageSeoOptions) {
   const links = [{ rel: "canonical", href: url }];
 
   const scripts = options.jsonLd
-    ? [
-        jsonLdScript(
-          Array.isArray(options.jsonLd)
-            ? options.jsonLd
-            : options.jsonLd,
-        ),
-      ]
+    ? Array.isArray(options.jsonLd)
+      ? options.jsonLd.map((item) => jsonLdScript(item))
+      : [jsonLdScript(options.jsonLd)]
     : [];
 
   return { meta, links, scripts };
@@ -91,12 +92,19 @@ export function createNoIndexHead(title: string, description: string, path: stri
 export function organizationJsonLd() {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": "SportingGoodsStore",
     name: SITE_NAME,
+    alternateName: `${SITE_NAME} ${SITE_TAGLINE}`,
     url: SITE_URL,
-    logo: DEFAULT_OG_IMAGE,
+    logo: SITE_LOGO,
+    image: DEFAULT_OG_IMAGE,
     description: DEFAULT_DESCRIPTION,
     email: "support@repcore.co",
+    priceRange: "₹₹",
+    areaServed: {
+      "@type": "Country",
+      name: "India",
+    },
   };
 }
 
@@ -111,6 +119,12 @@ export function websiteJsonLd() {
       "@type": "Organization",
       name: SITE_NAME,
       url: SITE_URL,
+      logo: SITE_LOGO,
+    },
+    potentialAction: {
+      "@type": "SearchAction",
+      target: `${SITE_URL}/products?q={search_term_string}`,
+      "query-input": "required name=search_term_string",
     },
   };
 }
@@ -158,9 +172,7 @@ export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
   };
 }
 
-export function faqPageJsonLd(
-  groups: { title: string; items: { q: string; a: string }[] }[],
-) {
+export function faqPageJsonLd(groups: { title: string; items: { q: string; a: string }[] }[]) {
   const mainEntity = groups.flatMap((group) =>
     group.items.map((item) => ({
       "@type": "Question",

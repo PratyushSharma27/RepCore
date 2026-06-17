@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { requireSupabase } from "./supabase";
 
 export type Category = {
   id: string;
@@ -34,28 +34,24 @@ export const getCategoriesList = (): Category[] => {
 
 export const fetchCategories = async (): Promise<Category[]> => {
   try {
-    const { data, error } = await supabase
-      .from("categories")
-      .select("*")
-      .order("name");
-      
+    const supabase = requireSupabase();
+    const { data, error } = await supabase.from("categories").select("*").order("name");
+
     if (error) {
       throw error;
     }
-    
+
     if (data && data.length === 0) {
       console.log("Supabase categories table is empty. Seeding defaults...");
-      const { error: seedErr } = await supabase
-        .from("categories")
-        .insert(defaultCategories);
+      const { error: seedErr } = await supabase.from("categories").insert(defaultCategories);
       if (seedErr) {
         console.error("Error seeding default categories to Supabase:", seedErr);
       }
       return defaultCategories;
     }
-    
+
     if (data && data.length > 0) {
-      const parsed: Category[] = data.map((item: any) => ({
+      const parsed: Category[] = data.map((item) => ({
         id: item.id,
         name: item.name,
       }));
@@ -70,12 +66,11 @@ export const fetchCategories = async (): Promise<Category[]> => {
 
 export const saveCategory = async (cat: Category): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("categories")
-      .upsert({
-        id: cat.id,
-        name: cat.name,
-      });
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("categories").upsert({
+      id: cat.id,
+      name: cat.name,
+    });
     if (error) throw error;
     return true;
   } catch (err) {
@@ -86,10 +81,8 @@ export const saveCategory = async (cat: Category): Promise<boolean> => {
 
 export const deleteCategory = async (id: string): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("categories")
-      .delete()
-      .eq("id", id);
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("categories").delete().eq("id", id);
     if (error) throw error;
     return true;
   } catch (err) {

@@ -5,12 +5,7 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,10 +26,14 @@ const nav = [
   { to: "/contact", label: "Contact" },
 ];
 
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
+}
+
 export function SiteHeader() {
   const { count } = useCart();
   const { user, profile, isAdmin, login, signUp, logout } = useAuth();
-  
+
   const [scrolled, setScrolled] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
@@ -75,8 +74,8 @@ export function SiteHeader() {
           toast.error(res.error || "Registration failed");
         }
       }
-    } catch (err: any) {
-      toast.error(err.message || "An unexpected error occurred");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "An unexpected error occurred"));
     } finally {
       setAuthLoading(false);
     }
@@ -91,11 +90,18 @@ export function SiteHeader() {
       }`}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
-        <Link to="/" className="flex items-center gap-2 transition-transform duration-300 hover:scale-105 active:scale-95">
-          <span className="grid h-8 w-8 place-items-center rounded-md bg-[image:var(--gradient-fire)] text-primary-foreground transition-all duration-300 hover:shadow-[0_0_15px_oklch(0.72_0.21_38/0.5)]">
-            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor">
-              <path d="M6 4h3v6h6V4h3v16h-3v-6H9v6H6V4z" />
-            </svg>
+        <Link
+          to="/"
+          className="flex items-center gap-2 transition-transform duration-300 hover:scale-105 active:scale-95"
+        >
+          <span className="grid h-9 w-9 place-items-center overflow-hidden rounded-md bg-background ring-1 ring-border/60 transition-all duration-300 hover:shadow-[0_0_15px_oklch(0.72_0.21_38/0.5)]">
+            <img
+              src="/logo.png"
+              alt="RepCore logo"
+              width={36}
+              height={36}
+              className="h-full w-full object-cover"
+            />
           </span>
           <span className="display text-lg tracking-wider">RepCore</span>
         </Link>
@@ -117,13 +123,20 @@ export function SiteHeader() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 bg-primary/5 text-sm font-bold text-foreground transition-all duration-300 hover:border-primary/60 hover:scale-105 cursor-pointer">
-                  {profile?.name ? profile.name.substring(0, 2).toUpperCase() : user.email?.substring(0, 2).toUpperCase()}
+                  {profile?.name
+                    ? profile.name.substring(0, 2).toUpperCase()
+                    : user.email?.substring(0, 2).toUpperCase()}
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-56 glass-card border border-border/40 backdrop-blur-md">
+              <DropdownMenuContent
+                align="end"
+                className="w-56 glass-card border border-border/40 backdrop-blur-md"
+              >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
-                    <p className="text-sm font-semibold text-foreground leading-none">{profile?.name || "Customer"}</p>
+                    <p className="text-sm font-semibold text-foreground leading-none">
+                      {profile?.name || "Customer"}
+                    </p>
                     <p className="text-xs text-muted-foreground leading-none mt-1">{user.email}</p>
                   </div>
                 </DropdownMenuLabel>
@@ -136,13 +149,19 @@ export function SiteHeader() {
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild>
-                    <Link to="/admin" className="flex items-center gap-2 cursor-pointer text-primary">
+                    <Link
+                      to="/admin"
+                      className="flex items-center gap-2 cursor-pointer text-primary"
+                    >
                       <ShieldCheck className="h-4 w-4" />
                       Admin Dashboard
                     </Link>
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem onClick={logout} className="flex items-center gap-2 cursor-pointer text-red-400 hover:text-red-300 focus:text-red-300">
+                <DropdownMenuItem
+                  onClick={logout}
+                  className="flex items-center gap-2 cursor-pointer text-red-400 hover:text-red-300 focus:text-red-300"
+                >
                   <LogOut className="h-4 w-4" />
                   Log Out
                 </DropdownMenuItem>
@@ -238,7 +257,11 @@ export function SiteHeader() {
               />
             </div>
 
-            <Button type="submit" disabled={authLoading} className="w-full btn-lift glow-pulse mt-2">
+            <Button
+              type="submit"
+              disabled={authLoading}
+              className="w-full btn-lift glow-pulse mt-2"
+            >
               {authLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

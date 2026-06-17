@@ -15,12 +15,14 @@ import { AuthProvider } from "../lib/auth-context";
 import { Toaster } from "../components/ui/sonner";
 import {
   DEFAULT_DESCRIPTION,
+  DEFAULT_KEYWORDS,
   DEFAULT_OG_IMAGE,
   SITE_NAME,
   SITE_URL,
   formatPageTitle,
   organizationJsonLd,
   jsonLdScript,
+  websiteJsonLd,
 } from "../lib/seo";
 
 function NotFoundComponent() {
@@ -89,7 +91,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: defaultTitle },
       { name: "description", content: DEFAULT_DESCRIPTION },
+      { name: "keywords", content: DEFAULT_KEYWORDS },
       { name: "author", content: SITE_NAME },
+      { name: "application-name", content: SITE_NAME },
+      { name: "robots", content: "index, follow, max-image-preview:large" },
       { name: "theme-color", content: "#1a1410" },
       { name: "format-detection", content: "telephone=no" },
       { property: "og:site_name", content: SITE_NAME },
@@ -98,6 +103,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:url", content: SITE_URL },
       { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { property: "og:image:alt", content: `${SITE_NAME} ${DEFAULT_DESCRIPTION}` },
+      { property: "og:image:width", content: "1080" },
+      { property: "og:image:height", content: "1920" },
       { property: "og:locale", content: "en_IN" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: defaultTitle },
@@ -107,8 +115,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "canonical", href: SITE_URL },
-      { rel: "icon", href: "/og.jpg", type: "image/jpeg" },
-      { rel: "apple-touch-icon", href: "/og.jpg" },
+      { rel: "icon", href: "/logo.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/logo.png" },
       { rel: "manifest", href: "/site.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
@@ -117,7 +125,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap",
       },
     ],
-    scripts: [jsonLdScript(organizationJsonLd())],
+    scripts: [jsonLdScript(organizationJsonLd()), jsonLdScript(websiteJsonLd())],
   }),
   shellComponent: RootShell,
   component: RootComponent,

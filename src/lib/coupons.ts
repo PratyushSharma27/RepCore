@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { requireSupabase } from "./supabase";
 
 export type Coupon = {
   code: string;
@@ -60,28 +60,25 @@ export const saveCouponsList = (coupons: Coupon[]) => {
 
 export const fetchCoupons = async (): Promise<Coupon[]> => {
   try {
-    const { data, error } = await supabase
-      .from("coupons")
-      .select("*");
-      
+    const supabase = requireSupabase();
+    const { data, error } = await supabase.from("coupons").select("*");
+
     if (error) {
       throw error;
     }
-    
+
     // Auto-seed if database returns exactly 0 records (table created but empty)
     if (data && data.length === 0) {
       console.log("Supabase coupons table is empty. Seeding defaults...");
-      const dbCoupons = defaultCoupons.map(c => ({
+      const dbCoupons = defaultCoupons.map((c) => ({
         code: c.code,
         type: c.type,
         value: c.value,
         min_order: c.minOrder,
         active: c.active,
-        description: c.description
+        description: c.description,
       }));
-      const { error: seedErr } = await supabase
-        .from("coupons")
-        .insert(dbCoupons);
+      const { error: seedErr } = await supabase.from("coupons").insert(dbCoupons);
       if (seedErr) {
         console.error("Error seeding default coupons to Supabase:", seedErr);
       } else {
@@ -89,9 +86,9 @@ export const fetchCoupons = async (): Promise<Coupon[]> => {
       }
       return defaultCoupons;
     }
-    
+
     if (data && data.length > 0) {
-      const parsed: Coupon[] = data.map((item: any) => ({
+      const parsed: Coupon[] = data.map((item) => ({
         code: item.code,
         type: item.type as "percentage" | "fixed",
         value: Number(item.value),
@@ -110,16 +107,15 @@ export const fetchCoupons = async (): Promise<Coupon[]> => {
 
 export const saveCoupon = async (c: Coupon): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("coupons")
-      .upsert({
-        code: c.code,
-        type: c.type,
-        value: c.value,
-        min_order: c.minOrder,
-        active: c.active,
-        description: c.description
-      });
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("coupons").upsert({
+      code: c.code,
+      type: c.type,
+      value: c.value,
+      min_order: c.minOrder,
+      active: c.active,
+      description: c.description,
+    });
     if (error) throw error;
     return true;
   } catch (err) {
@@ -130,10 +126,8 @@ export const saveCoupon = async (c: Coupon): Promise<boolean> => {
 
 export const deleteCoupon = async (code: string): Promise<boolean> => {
   try {
-    const { error } = await supabase
-      .from("coupons")
-      .delete()
-      .eq("code", code);
+    const supabase = requireSupabase();
+    const { error } = await supabase.from("coupons").delete().eq("code", code);
     if (error) throw error;
     return true;
   } catch (err) {
