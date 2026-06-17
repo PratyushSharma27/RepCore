@@ -1,4 +1,4 @@
-import { requireSupabase } from "./supabase";
+import { hasSupabaseConfig, requireSupabase } from "./supabase";
 
 export type Coupon = {
   code: string;
@@ -58,7 +58,13 @@ export const saveCouponsList = (coupons: Coupon[]) => {
   }
 };
 
-export const fetchCoupons = async (): Promise<Coupon[]> => {
+type FetchCouponsOptions = {
+  fallbackToCache?: boolean;
+};
+
+export const fetchCoupons = async ({ fallbackToCache = true }: FetchCouponsOptions = {}): Promise<
+  Coupon[]
+> => {
   try {
     const supabase = requireSupabase();
     const { data, error } = await supabase.from("coupons").select("*");
@@ -67,24 +73,9 @@ export const fetchCoupons = async (): Promise<Coupon[]> => {
       throw error;
     }
 
-    // Auto-seed if database returns exactly 0 records (table created but empty)
     if (data && data.length === 0) {
-      console.log("Supabase coupons table is empty. Seeding defaults...");
-      const dbCoupons = defaultCoupons.map((c) => ({
-        code: c.code,
-        type: c.type,
-        value: c.value,
-        min_order: c.minOrder,
-        active: c.active,
-        description: c.description,
-      }));
-      const { error: seedErr } = await supabase.from("coupons").insert(dbCoupons);
-      if (seedErr) {
-        console.error("Error seeding default coupons to Supabase:", seedErr);
-      } else {
-        console.log("Successfully seeded default coupons to Supabase.");
-      }
-      return defaultCoupons;
+      localStorage.setItem("repcore_coupons", JSON.stringify([]));
+      return [];
     }
 
     if (data && data.length > 0) {
@@ -102,7 +93,8 @@ export const fetchCoupons = async (): Promise<Coupon[]> => {
   } catch (err) {
     console.warn("Could not load coupons from Supabase (falling back to client cache):", err);
   }
-  return getCouponsList();
+  if (!hasSupabaseConfig || fallbackToCache) return getCouponsList();
+  return [];
 };
 
 export const saveCoupon = async (c: Coupon): Promise<boolean> => {

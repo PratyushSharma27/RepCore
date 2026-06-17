@@ -1,4 +1,4 @@
-import { requireSupabase } from "./supabase";
+import { hasSupabaseConfig, requireSupabase } from "./supabase";
 
 export type Category = {
   id: string;
@@ -32,7 +32,13 @@ export const getCategoriesList = (): Category[] => {
   return defaultCategories;
 };
 
-export const fetchCategories = async (): Promise<Category[]> => {
+type FetchCategoriesOptions = {
+  fallbackToCache?: boolean;
+};
+
+export const fetchCategories = async ({
+  fallbackToCache = true,
+}: FetchCategoriesOptions = {}): Promise<Category[]> => {
   try {
     const supabase = requireSupabase();
     const { data, error } = await supabase.from("categories").select("*").order("name");
@@ -42,12 +48,8 @@ export const fetchCategories = async (): Promise<Category[]> => {
     }
 
     if (data && data.length === 0) {
-      console.log("Supabase categories table is empty. Seeding defaults...");
-      const { error: seedErr } = await supabase.from("categories").insert(defaultCategories);
-      if (seedErr) {
-        console.error("Error seeding default categories to Supabase:", seedErr);
-      }
-      return defaultCategories;
+      localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify([]));
+      return [];
     }
 
     if (data && data.length > 0) {
@@ -61,7 +63,8 @@ export const fetchCategories = async (): Promise<Category[]> => {
   } catch (err) {
     console.warn("Could not load categories from Supabase (falling back to client cache):", err);
   }
-  return getCategoriesList();
+  if (!hasSupabaseConfig || fallbackToCache) return getCategoriesList();
+  return [];
 };
 
 export const saveCategory = async (cat: Category): Promise<boolean> => {

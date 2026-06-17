@@ -1,4 +1,4 @@
-import { requireSupabase } from "./supabase";
+import { hasSupabaseConfig, requireSupabase } from "./supabase";
 
 export type PaymentStatus = "Pending Verification" | "Verified" | "Rejected";
 export type OrderStatus =
@@ -368,7 +368,13 @@ export const getOrdersList = (): Order[] => {
   return defaultOrders;
 };
 
-export const fetchOrders = async (): Promise<Order[]> => {
+type FetchOrdersOptions = {
+  fallbackToCache?: boolean;
+};
+
+export const fetchOrders = async ({ fallbackToCache = true }: FetchOrdersOptions = {}): Promise<
+  Order[]
+> => {
   try {
     const supabase = requireSupabase();
     let { data, error } = await supabase
@@ -386,7 +392,7 @@ export const fetchOrders = async (): Promise<Order[]> => {
       if (error) throw error;
     }
 
-    if (data && data.length > 0) {
+    if (data) {
       const parsed: Order[] = data.map((item) => ({
         id: item.id,
         customerEmail: item.customer_email,
@@ -420,14 +426,17 @@ export const fetchOrders = async (): Promise<Order[]> => {
         },
         createdAt: item.created_at || new Date().toISOString(),
       }));
-      const merged = mergeOrders(parsed, getOrdersList());
-      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(merged));
-      return merged;
+      const next = hasSupabaseConfig
+        ? sortOrdersNewestFirst(parsed)
+        : mergeOrders(parsed, getOrdersList());
+      localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(next));
+      return next;
     }
   } catch (err) {
     console.warn("Could not load orders from Supabase (falling back to client cache):", err);
   }
-  return getOrdersList();
+  if (!hasSupabaseConfig || fallbackToCache) return getOrdersList();
+  return [];
 };
 
 export const saveOrder = async (o: Order): Promise<boolean> => {
@@ -522,13 +531,16 @@ export const createOrder = async (input: CreateOrderInput): Promise<Order> => {
     createdAt: new Date().toISOString(),
   });
 
+  const saved = await saveOrder(order);
+  if (!saved && hasSupabaseConfig) {
+    throw new Error("Order could not be saved to the database. Please try again.");
+  }
+
   if (typeof window !== "undefined") {
     const localOrders = getOrdersList();
     const next = [order, ...localOrders.filter((o) => o.id !== order.id)];
     localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(next));
   }
-
-  await saveOrder(order);
   return order;
 };
 

@@ -1,4 +1,4 @@
-import { requireSupabase } from "./supabase";
+import { hasSupabaseConfig, requireSupabase } from "./supabase";
 
 export type Customer = {
   id: string;
@@ -58,7 +58,13 @@ export const getCustomersList = (): Customer[] => {
   return defaultCustomers;
 };
 
-export const fetchCustomers = async (): Promise<Customer[]> => {
+type FetchCustomersOptions = {
+  fallbackToCache?: boolean;
+};
+
+export const fetchCustomers = async ({
+  fallbackToCache = true,
+}: FetchCustomersOptions = {}): Promise<Customer[]> => {
   try {
     const supabase = requireSupabase();
     const { data, error } = await supabase
@@ -71,18 +77,8 @@ export const fetchCustomers = async (): Promise<Customer[]> => {
     }
 
     if (data && data.length === 0) {
-      console.log("Supabase customers table is empty. Seeding defaults...");
-      const dbCusts = defaultCustomers.map((c) => ({
-        id: c.id,
-        email: c.email,
-        name: c.name,
-        created_at: c.createdAt,
-      }));
-      const { error: seedErr } = await supabase.from("customers").insert(dbCusts);
-      if (seedErr) {
-        console.error("Error seeding default customers to Supabase:", seedErr);
-      }
-      return defaultCustomers;
+      localStorage.setItem(CUSTOMERS_STORAGE_KEY, JSON.stringify([]));
+      return [];
     }
 
     if (data && data.length > 0) {
@@ -98,7 +94,8 @@ export const fetchCustomers = async (): Promise<Customer[]> => {
   } catch (err) {
     console.warn("Could not load customers from Supabase (falling back to client cache):", err);
   }
-  return getCustomersList();
+  if (!hasSupabaseConfig || fallbackToCache) return getCustomersList();
+  return [];
 };
 
 export const saveCustomer = async (c: Customer): Promise<boolean> => {

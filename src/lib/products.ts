@@ -5,7 +5,7 @@ import grip from "@/assets/p-grip.jpg";
 import shaker from "@/assets/p-shaker.jpg";
 import foam from "@/assets/p-foam.jpg";
 import gun from "@/assets/p-gun.jpg";
-import { requireSupabase } from "./supabase";
+import { hasSupabaseConfig, requireSupabase } from "./supabase";
 
 export type Product = {
   slug: string;
@@ -218,7 +218,13 @@ export const getProduct = (slug: string) => {
   return getProductsList().find((p) => p.slug === slug);
 };
 
-export const fetchProducts = async (): Promise<Product[]> => {
+type FetchProductsOptions = {
+  fallbackToCache?: boolean;
+};
+
+export const fetchProducts = async ({ fallbackToCache = true }: FetchProductsOptions = {}): Promise<
+  Product[]
+> => {
   try {
     const supabase = requireSupabase();
     const { data, error } = await supabase.from("products").select("*");
@@ -228,16 +234,9 @@ export const fetchProducts = async (): Promise<Product[]> => {
       throw error;
     }
 
-    // Auto-seed if database returns exactly 0 records (table created but empty)
     if (data && data.length === 0) {
-      console.log("Supabase products table is empty. Seeding defaults...");
-      const { error: seedErr } = await supabase.from("products").insert(products);
-      if (seedErr) {
-        console.error("Error seeding default products to Supabase:", seedErr);
-      } else {
-        console.log("Successfully seeded default products to Supabase.");
-      }
-      return products;
+      localStorage.setItem(PRODUCTS_STORAGE_KEY, JSON.stringify([]));
+      return [];
     }
 
     if (data && data.length > 0) {
@@ -258,7 +257,8 @@ export const fetchProducts = async (): Promise<Product[]> => {
   } catch (err) {
     console.warn("Could not load products from Supabase (falling back to client cache):", err);
   }
-  return getProductsList();
+  if (!hasSupabaseConfig || fallbackToCache) return getProductsList();
+  return [];
 };
 
 export const saveProduct = async (p: Product): Promise<boolean> => {

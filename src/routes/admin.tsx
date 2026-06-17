@@ -39,7 +39,6 @@ import { toast } from "sonner";
 import { SiteLayout } from "@/components/site-layout";
 import { useAuth } from "@/lib/auth-context";
 import {
-  getProductsList,
   PRODUCTS_STORAGE_KEY,
   fetchProducts,
   saveProduct,
@@ -47,7 +46,6 @@ import {
   type Product,
 } from "@/lib/products";
 import {
-  getCouponsList,
   saveCouponsList,
   fetchCoupons,
   saveCoupon as saveCouponRemote,
@@ -60,7 +58,6 @@ import {
   updateOrderStatus,
   updatePaymentStatus,
   updateTrackingNumber,
-  getOrdersList,
   ORDERS_STORAGE_KEY,
   deleteOrder,
   ORDER_STATUSES,
@@ -73,18 +70,11 @@ import {
 } from "@/lib/orders";
 import {
   fetchCustomers,
-  getCustomersList,
   deleteCustomer,
   CUSTOMERS_STORAGE_KEY,
   type Customer,
 } from "@/lib/customers";
-import {
-  fetchCategories,
-  saveCategory,
-  deleteCategory,
-  getCategoriesList,
-  type Category,
-} from "@/lib/categories";
+import { fetchCategories, saveCategory, deleteCategory, type Category } from "@/lib/categories";
 import { useReveal, useTilt3D, useStaggerReveal } from "@/hooks/use-animations";
 import { createNoIndexHead } from "@/lib/seo";
 
@@ -127,6 +117,7 @@ function AdminPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [adminDataLoading, setAdminDataLoading] = useState(false);
   const [orderSearch, setOrderSearch] = useState("");
   const [orderStatusFilter, setOrderStatusFilter] = useState<"all" | OrderStatus>("all");
   const [paymentStatusFilter, setPaymentStatusFilter] = useState<"all" | PaymentStatus>("all");
@@ -140,30 +131,41 @@ function AdminPage() {
   const [entered, setEntered] = useState(false);
 
   useEffect(() => {
-    // 1. Initial synchronous loads from cache
-    setItems(getProductsList());
-    setCoupons(getCouponsList());
-    setOrders(getOrdersList());
-    setCustomers(getCustomersList());
-    setCategories(getCategoriesList());
+    let active = true;
 
-    // 2. Asynchronous remote load from Supabase database
     const loadData = async () => {
-      const dbProducts = await fetchProducts();
-      setItems(dbProducts);
-      const dbCoupons = await fetchCoupons();
-      setCoupons(dbCoupons);
-      const dbOrders = await fetchOrders();
-      setOrders(dbOrders);
-      const dbCustomers = await fetchCustomers();
-      setCustomers(dbCustomers);
-      const dbCategories = await fetchCategories();
-      setCategories(dbCategories);
+      setAdminDataLoading(true);
+      try {
+        const [dbProducts, dbCoupons, dbOrders, dbCustomers, dbCategories] = await Promise.all([
+          fetchProducts({ fallbackToCache: false }),
+          fetchCoupons({ fallbackToCache: false }),
+          fetchOrders({ fallbackToCache: false }),
+          fetchCustomers({ fallbackToCache: false }),
+          fetchCategories({ fallbackToCache: false }),
+        ]);
+
+        if (!active) return;
+        setItems(dbProducts);
+        setCoupons(dbCoupons);
+        setOrders(dbOrders);
+        setCustomers(dbCustomers);
+        setCategories(dbCategories);
+      } catch (err) {
+        console.error("Admin data load failed:", err);
+        if (active) {
+          toast.error("Could not load admin data from Supabase.");
+        }
+      } finally {
+        if (active) setAdminDataLoading(false);
+      }
     };
     loadData();
 
     const t = setTimeout(() => setEntered(true), 100);
-    return () => clearTimeout(t);
+    return () => {
+      active = false;
+      clearTimeout(t);
+    };
   }, []);
 
   const [tabAnimate, setTabAnimate] = useState(false);
@@ -704,6 +706,12 @@ function AdminPage() {
 
       {/* HORIZONTAL SCROLLABLE TABS */}
       <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6">
+        {adminDataLoading && (
+          <div className="mb-5 flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-4 py-3 text-xs font-semibold uppercase tracking-widest text-primary">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Syncing admin data from Supabase
+          </div>
+        )}
         <div className="flex border-b border-border/40 gap-6 overflow-x-auto pb-1 scrollbar-thin">
           {(
             [
