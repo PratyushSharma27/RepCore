@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ShoppingBag, LogOut, ShieldCheck, Loader2 } from "lucide-react";
+import { ShoppingBag, LogOut, ShieldCheck, Loader2, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth-context";
@@ -35,6 +35,7 @@ export function SiteHeader() {
   const { user, profile, isAdmin, login, signUp, logout } = useAuth();
 
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
   const [email, setEmail] = useState("");
@@ -196,11 +197,38 @@ export function SiteHeader() {
               </span>
             )}
           </Link>
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-border/60 text-foreground transition-all duration-300 hover:border-primary/60 hover:text-primary md:hidden cursor-pointer"
+            aria-label="Toggle Menu"
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </button>
           <Button variant="hero" size="sm" asChild className="hidden sm:inline-flex btn-lift">
             <Link to="/products">Shop Now</Link>
           </Button>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div className="border-t border-border/40 bg-background/95 backdrop-blur-xl md:hidden">
+          <nav className="flex flex-col p-4 space-y-3">
+            {nav.map((n) => (
+              <Link
+                key={n.to}
+                to={n.to}
+                onClick={() => setMobileMenuOpen(false)}
+                className="text-sm font-medium text-muted-foreground transition-all duration-300 hover:text-foreground p-2 rounded-lg hover:bg-primary/5"
+                activeProps={{ className: "text-foreground bg-primary/5 font-semibold" }}
+                activeOptions={{ exact: n.to === "/" }}
+              >
+                {n.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
 
       {/* AUTHENTICATION DIALOG */}
       <Dialog open={authOpen} onOpenChange={setAuthOpen}>

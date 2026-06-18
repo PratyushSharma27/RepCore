@@ -218,10 +218,10 @@ function Index() {
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-20 sm:px-6 md:grid-cols-2">
           <div className={`anim-reveal-left ${statBand.visible ? "visible" : ""}`}>
             <div className="text-xs uppercase tracking-[0.3em] text-primary">Why RepCore</div>
-            <h3 className="mt-4 text-5xl sm:text-6xl">
+            <h2 className="mt-4 text-5xl sm:text-6xl">
               We make gear <span className="text-primary text-glow">for the set</span>, not the
               shelf.
-            </h3>
+            </h2>
           </div>
           <p
             className={`self-end text-lg text-muted-foreground anim-reveal-right anim-delay-2 ${statBand.visible ? "visible" : ""}`}
@@ -296,7 +296,7 @@ function Index() {
             }}
           />
           <div className="relative">
-            <h3 className="text-5xl sm:text-7xl">Ready to train heavy?</h3>
+            <h2 className="text-5xl sm:text-7xl">Ready to train heavy?</h2>
             <p className="mt-4 max-w-lg text-muted-foreground">
               Free shipping over ₹500. 60-day return window. Quality gear built for hard training.
             </p>

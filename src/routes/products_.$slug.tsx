@@ -331,11 +331,11 @@ function ProductPage() {
 
       {/* Related products */}
       <section ref={relatedReveal.ref} className="mx-auto max-w-7xl px-4 pb-24 sm:px-6">
-        <h3
+        <h2
           className={`text-3xl sm:text-4xl anim-reveal-up ${relatedReveal.visible ? "visible" : ""}`}
         >
           More from the lineup
-        </h3>
+        </h2>
         <div ref={relatedGridRef} className="mt-8 grid gap-6 sm:grid-cols-3 perspective-container">
           {related.map((p, i) => (
             <RelatedCard key={p.slug} product={p} visible={relatedVisible[i]} index={i} />

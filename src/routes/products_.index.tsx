@@ -128,6 +128,7 @@ function ProductsPage() {
                 product={p}
                 index={i}
                 visible={gridReveal.visible}
+                priority={i < 3}
                 onAdd={() => { add(p.slug); toast.success(`${p.name} added`); }}
               />
             ))}
@@ -142,11 +143,13 @@ function ProductCard3D({
   product: p,
   index,
   visible,
+  priority,
   onAdd,
 }: {
   product: Product;
   index: number;
   visible: boolean;
+  priority?: boolean;
   onAdd: () => void;
 }) {
   const tiltRef = useTilt3D(10);
@@ -168,7 +171,8 @@ function ProductCard3D({
             <img
               src={p.image}
               alt={p.name}
-              loading="lazy"
+              loading={priority ? "eager" : "lazy"}
+              {...(priority ? { fetchpriority: "high" } : {})}
               width={800}
               height={800}
               className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
