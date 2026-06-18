@@ -983,6 +983,46 @@ function AdminPage() {
                       </div>
 
                       <p className="line-clamp-2 text-xs text-muted-foreground">{itemSummary}</p>
+
+                      {(o.utrNumber || o.notes || o.screenshotUrl) && (
+                        <div className="mt-3 space-y-2 border-t border-border/40 pt-3 text-xs">
+                          {o.utrNumber && (
+                            <p className="text-muted-foreground">
+                              <span className="font-semibold text-foreground">UTR:</span>{" "}
+                              <code className="rounded bg-secondary/60 px-1 py-0.5 font-mono">{o.utrNumber}</code>
+                            </p>
+                          )}
+                          {o.notes && (
+                            <p className="text-muted-foreground">
+                              <span className="font-semibold text-foreground">Notes:</span> {o.notes}
+                            </p>
+                          )}
+                          {o.screenshotUrl && (
+                            <div>
+                              <span className="block text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mb-1">
+                                Payment Screenshot:
+                              </span>
+                              <a
+                                href={o.screenshotUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group inline-block relative overflow-hidden rounded-lg border border-border/60 bg-muted hover:border-primary/50 transition-all duration-300"
+                              >
+                                <img
+                                  src={o.screenshotUrl}
+                                  alt="Payment Proof Receipt"
+                                  className="h-20 w-36 object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+                                <div className="absolute inset-0 bg-background/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                  <span className="text-[10px] uppercase tracking-widest font-bold text-foreground">
+                                    Open Proof ↗
+                                  </span>
+                                </div>
+                              </a>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
 
                     <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
@@ -1663,6 +1703,54 @@ function AdminPage() {
                     </table>
                   </div>
                 </div>
+
+                {/* UTR & Payment Proof section inside Dialog */}
+                {(orderDetail.utrNumber || orderDetail.notes || orderDetail.screenshotUrl) && (
+                  <div className="rounded-xl border border-border/60 bg-secondary/10 p-4 text-sm space-y-3">
+                    <h4 className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
+                      Payment Verification Details
+                    </h4>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        {orderDetail.utrNumber && (
+                          <p className="text-muted-foreground">
+                            <span className="font-semibold text-foreground">UTR Reference:</span>{" "}
+                            <code className="rounded bg-secondary/80 px-1.5 py-0.5 font-mono text-xs">{orderDetail.utrNumber}</code>
+                          </p>
+                        )}
+                        {orderDetail.notes && (
+                          <p className="text-muted-foreground">
+                            <span className="font-semibold text-foreground">Order Notes:</span> {orderDetail.notes}
+                          </p>
+                        )}
+                        <p className="text-muted-foreground">
+                          <span className="font-semibold text-foreground">Verification Status:</span>{" "}
+                          <span className="font-bold text-primary">{orderDetail.paymentStatus}</span>
+                        </p>
+                      </div>
+                      {orderDetail.screenshotUrl && (
+                        <div>
+                          <p className="font-semibold text-foreground mb-1.5 text-xs">Screenshot Receipt Proof:</p>
+                          <a
+                            href={orderDetail.screenshotUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative inline-block overflow-hidden rounded-lg border border-border/60"
+                          >
+                            <img
+                              src={orderDetail.screenshotUrl}
+                              alt="UPI Screenshot Receipt"
+                              className="h-24 w-44 object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <span className="text-[10px] font-bold tracking-wider uppercase text-white">View Full Proof</span>
+                            </div>
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Totals */}
                 <div className="flex justify-end pt-2">
