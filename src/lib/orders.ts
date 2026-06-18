@@ -461,6 +461,7 @@ export const saveOrder = async (o: Order): Promise<boolean> => {
       city: o.shippingAddress.city,
       state: o.shippingAddress.state || "",
       pincode: o.shippingAddress.postalCode,
+      total: o.total,
       total_amount: o.total,
       payment_status: o.paymentStatus,
       order_status: o.orderStatus,
