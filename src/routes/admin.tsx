@@ -217,10 +217,11 @@ function AdminPage() {
     const res = await login(email, password);
     setLoginLoading(false);
     if (res.success) {
-      if (email.toLowerCase() === "pratyush@tenimal.com") {
+      const adminEmail = (import.meta.env.VITE_ADMIN_EMAIL || "pratyush@tenimal.com").toLowerCase();
+      if (email.toLowerCase() === adminEmail) {
         toast.success("Welcome, Administrator.");
       } else {
-        toast.error("Access Denied: Only pratyush@tenimal.com is authorized.");
+        toast.error("Access Denied: You are not authorized to access the Admin panel.");
       }
     } else {
       toast.error(res.error || "Login failed.");
@@ -547,8 +548,7 @@ function AdminPage() {
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
                 You are currently signed in as{" "}
                 <span className="font-semibold text-foreground">{user.email}</span>. Only{" "}
-                <strong className="text-primary font-bold">pratyush@tenimal.com</strong> can access
-                the administrator control dashboard.
+                authorized administrator accounts can access the administrator control dashboard.
               </p>
               <div className="mt-8 flex flex-col gap-3">
                 <Button
@@ -586,7 +586,7 @@ function AdminPage() {
                   <Input
                     type="email"
                     required
-                    placeholder="pratyush@tenimal.com"
+                    placeholder="admin@example.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="transition-all duration-300 focus:ring-2 focus:ring-primary/30"
@@ -619,15 +619,6 @@ function AdminPage() {
                   )}
                 </Button>
               </form>
-
-              <div className="mt-6 border-t border-border/40 pt-4 text-center">
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest">
-                  Administrator Username:
-                </span>
-                <div className="mt-1 text-xs font-mono text-primary font-bold">
-                  pratyush@tenimal.com
-                </div>
-              </div>
             </div>
           )}
         </section>

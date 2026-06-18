@@ -31,7 +31,6 @@ export function SiteFooter() {
             <h4 className="mb-4 text-xs uppercase tracking-widest text-muted-foreground">Company</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/about" className="hover:text-primary hover-underline-anim transition-colors duration-300">Our Story</Link></li>
-              <li><Link to="/admin" className="hover:text-primary hover-underline-anim transition-colors duration-300">Admin</Link></li>
               <li><a href="#" className="hover:text-primary hover-underline-anim transition-colors duration-300">Wholesale</a></li>
             </ul>
           </div>

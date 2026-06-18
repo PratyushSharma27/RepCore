@@ -35,8 +35,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Derive admin status - check email matches pratyush@tenimal.com
-  const isAdmin = user ? user.email?.toLowerCase() === "pratyush@tenimal.com" : false;
+  // Derive admin status - check email matches authorized admin configuration
+  const isAdmin = user
+    ? user.email?.toLowerCase() === (import.meta.env.VITE_ADMIN_EMAIL || "pratyush@tenimal.com").toLowerCase()
+    : false;
 
   const loadProfile = useCallback(async (userId: string, email: string, defaultName?: string) => {
     const name = defaultName || email.split("@")[0];
