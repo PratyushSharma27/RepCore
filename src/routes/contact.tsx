@@ -84,24 +84,73 @@ function ContactPage() {
         </div>
 
         <form
-          onSubmit={(e) => {
+          onSubmit={async (e) => {
             e.preventDefault();
             setSending(true);
-            setTimeout(() => {
+            const form = e.currentTarget;
+            const data = new FormData(form);
+            try {
+              const response = await fetch("https://formspree.io/f/mrevvwjn", {
+                method: "POST",
+                body: data,
+                headers: {
+                  Accept: "application/json",
+                },
+              });
+              if (response.ok) {
+                toast.success("Message sent successfully! We'll be in touch within 24 hours.");
+                form.reset();
+              } else {
+                const responseData = await response.json();
+                toast.error(responseData.error || "Failed to send message. Please try again.");
+              }
+            } catch (error) {
+              toast.error("An error occurred. Please check your network connection and try again.");
+            } finally {
               setSending(false);
-              toast.success("Message sent. We'll be in touch within 24 hours.");
-              (e.target as HTMLFormElement).reset();
-            }, 700);
+            }
           }}
           className={`space-y-5 rounded-2xl border border-border/60 bg-card p-8 card-3d-alt gradient-border-hover anim-reveal-right ${formReveal.visible ? "visible" : ""}`}
         >
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field id="name" label="Name"><Input id="name" required placeholder="Your name" className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]" /></Field>
-            <Field id="email" label="Email"><Input id="email" type="email" required placeholder="you@example.com" className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]" /></Field>
+            <Field id="name" label="Name">
+              <Input
+                id="name"
+                name="name"
+                required
+                placeholder="Your name"
+                className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]"
+              />
+            </Field>
+            <Field id="email" label="Email">
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                required
+                placeholder="you@example.com"
+                className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]"
+              />
+            </Field>
           </div>
-          <Field id="subject" label="Subject"><Input id="subject" required placeholder="What's up?" className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]" /></Field>
+          <Field id="subject" label="Subject">
+            <Input
+              id="subject"
+              name="subject"
+              required
+              placeholder="What's up?"
+              className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]"
+            />
+          </Field>
           <Field id="msg" label="Message">
-            <Textarea id="msg" required rows={5} placeholder="Tell us about it…" className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]" />
+            <Textarea
+              id="msg"
+              name="message"
+              required
+              rows={5}
+              placeholder="Tell us about it…"
+              className="transition-all duration-300 focus:ring-2 focus:ring-primary/30 focus:shadow-[0_0_20px_oklch(0.72_0.21_38/0.15)]"
+            />
           </Field>
           <Button type="submit" variant="hero" size="xl" disabled={sending} className="w-full sm:w-auto btn-lift glow-pulse">
             <Send className="h-4 w-4" /> {sending ? "Sending…" : "Send message"}

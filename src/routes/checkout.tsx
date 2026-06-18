@@ -25,6 +25,7 @@ import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth-context";
 import { getProduct } from "@/lib/products";
 import { createOrder, type OrderItem, uploadPaymentScreenshot } from "@/lib/orders";
+import { getCouponsList, fetchCoupons, type Coupon } from "@/lib/coupons";
 import {
   buildUpiPaymentLink,
   createOrderId,
@@ -108,6 +109,25 @@ function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false);
   const [placedId, setPlacedId] = useState("");
 
+  // Coupon states
+  const [couponsList, setCouponsList] = useState<Coupon[]>([]);
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponError, setCouponError] = useState("");
+
+  useEffect(() => {
+    setCouponsList(getCouponsList());
+    const loadCoupons = async () => {
+      try {
+        const dbCoupons = await fetchCoupons();
+        setCouponsList(dbCoupons);
+      } catch (err) {
+        console.warn("Could not load coupons for checkout validation:", err);
+      }
+    };
+    loadCoupons();
+  }, []);
+
   useEffect(() => {
     const t = setTimeout(() => setEntered(true), 100);
     return () => clearTimeout(t);
@@ -136,8 +156,18 @@ function CheckoutPage() {
   }, [cart.lines, directProduct, directQty]);
 
   const subtotal = checkoutLines.reduce((sum, line) => sum + line.lineTotal, 0);
-  const shipping = subtotal === 0 || subtotal >= 500 ? 0 : 99;
-  const total = subtotal + shipping;
+
+  const discountAmount = useMemo(() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.type === "percentage") {
+      return Math.round((subtotal * appliedCoupon.value) / 100);
+    } else {
+      return Math.min(appliedCoupon.value, subtotal);
+    }
+  }, [appliedCoupon, subtotal]);
+
+  const shipping = subtotal === 0 || (subtotal - discountAmount) >= 500 ? 0 : 99;
+  const total = Math.max(0, subtotal - discountAmount + shipping);
   const deliveryEstimate = "3-7 business days after dispatch";
   const upiLink = useMemo(() => buildUpiPaymentLink({ amount: total, orderId }), [orderId, total]);
 
@@ -204,6 +234,31 @@ function CheckoutPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleApplyCoupon = (e: React.FormEvent) => {
+    e.preventDefault();
+    setCouponError("");
+    const code = couponCode.toUpperCase().trim();
+    if (!code) return;
+    const match = couponsList.find((c) => c.code === code);
+    if (!match) {
+      setCouponError("Invalid coupon code.");
+      setAppliedCoupon(null);
+      return;
+    }
+    if (!match.active) {
+      setCouponError("This coupon is no longer active.");
+      setAppliedCoupon(null);
+      return;
+    }
+    if (subtotal < match.minOrder) {
+      setCouponError(`Min order value for this coupon is ₹${match.minOrder}.`);
+      setAppliedCoupon(null);
+      return;
+    }
+    setAppliedCoupon(match);
+    toast.success(`Coupon "${code}" applied successfully!`);
+  };
+
   const completePayment = async () => {
     if (!formResult.success) {
       setStep("details");
@@ -240,7 +295,11 @@ function CheckoutPage() {
         items,
         screenshotUrl,
         utrNumber: utrNumber.trim() || undefined,
-        notes: notes.trim() || undefined,
+        notes: notes.trim()
+          ? `${notes.trim()}${appliedCoupon ? ` (Applied Coupon: ${appliedCoupon.code})` : ""}`
+          : appliedCoupon
+            ? `Applied Coupon: ${appliedCoupon.code}`
+            : undefined,
       });
 
       if (!directProduct) cart.clear();
@@ -515,9 +574,54 @@ function CheckoutPage() {
             )}
           </div>
 
+          {/* Coupon Code Section */}
+          <div className="border-t border-border/60 pt-4">
+            <form onSubmit={handleApplyCoupon} className="flex gap-2">
+              <Input
+                value={couponCode}
+                onChange={(e) => {
+                  setCouponCode(e.target.value);
+                  if (couponError) setCouponError("");
+                }}
+                placeholder="PROMO CODE"
+                className="h-10 text-xs font-mono uppercase focus:ring-1 focus:ring-primary"
+                disabled={!!appliedCoupon}
+              />
+              {appliedCoupon ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setAppliedCoupon(null);
+                    setCouponCode("");
+                  }}
+                  className="h-10 text-xs border-red-500/20 text-red-400 hover:bg-red-500/5 hover:text-red-300"
+                >
+                  Remove
+                </Button>
+              ) : (
+                <Button type="submit" variant="outline" className="h-10 text-xs border-primary/20">
+                  Apply
+                </Button>
+              )}
+            </form>
+            {couponError && <p className="mt-1 text-xs text-destructive">{couponError}</p>}
+            {appliedCoupon && (
+              <p className="mt-2 text-xs text-primary font-medium flex items-center gap-1">
+                <Check className="h-3 w-3" /> Code "{appliedCoupon.code}" applied!
+              </p>
+            )}
+          </div>
+
           <dl className="mt-6 space-y-2 border-t border-border/60 pt-4 text-sm">
             <SummaryRow label="Unit Price" value={checkoutLines.length === 1 ? formatInr(checkoutLines[0].product.price) : "Multiple"} />
             <SummaryRow label="Subtotal" value={formatInr(subtotal)} />
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-primary font-medium text-xs">
+                <dt>Discount ({appliedCoupon?.code}):</dt>
+                <dd>-{formatInr(discountAmount)}</dd>
+              </div>
+            )}
             <SummaryRow label="Shipping Cost" value={shipping === 0 ? "Free" : formatInr(shipping)} />
             <SummaryRow label="Estimated Delivery" value={deliveryEstimate} />
             <div className="flex justify-between border-t border-border/60 pt-3">
