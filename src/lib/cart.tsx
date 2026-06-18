@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { getProductsList, type Product } from "./products";
 import { getCouponsList, type Coupon } from "./coupons";
+import { useAuth } from "./auth-context";
+import { hasSupabaseConfig, supabase } from "./supabase";
 
 export type CartItem = { slug: string; qty: number };
 
@@ -26,8 +28,50 @@ const KEY = "repcore_cart_v1";
 const COUPON_KEY = "repcore_applied_coupon_v1";
 
 export function CartProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+
+  // Load / Merge cart from Supabase when user session is loaded
+  useEffect(() => {
+    if (user) {
+      const remoteCart = user.user_metadata?.cart as CartItem[] | undefined;
+      if (remoteCart && Array.isArray(remoteCart)) {
+        setItems((localCart) => {
+          const merged = [...localCart];
+          remoteCart.forEach((remote) => {
+            const idx = merged.findIndex((l) => l.slug === remote.slug);
+            if (idx === -1) {
+              merged.push(remote);
+            } else {
+              merged[idx].qty = Math.max(merged[idx].qty, remote.qty);
+            }
+          });
+          return merged;
+        });
+      }
+    }
+  }, [user]);
+
+  // Sync cart items to Supabase user metadata when changed
+  useEffect(() => {
+    if (user && hasSupabaseConfig && supabase) {
+      const syncCart = async () => {
+        try {
+          const currentMeta = user.user_metadata || {};
+          if (JSON.stringify(currentMeta.cart) !== JSON.stringify(items)) {
+            await supabase.auth.updateUser({
+              data: { ...currentMeta, cart: items },
+            });
+          }
+        } catch (e) {
+          console.warn("Failed to sync cart to Supabase user metadata:", e);
+        }
+      };
+      const t = setTimeout(syncCart, 800);
+      return () => clearTimeout(t);
+    }
+  }, [items, user]);
 
   // Load cart and coupon from localStorage on mount
   useEffect(() => {

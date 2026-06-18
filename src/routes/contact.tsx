@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Phone, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
+  const navigate = useNavigate();
   const [sending, setSending] = useState(false);
 
   const [entered, setEntered] = useState(false);
@@ -98,8 +99,9 @@ function ContactPage() {
                 },
               });
               if (response.ok) {
-                toast.success("Message sent successfully! We'll be in touch within 24 hours.");
+                toast.success("Message sent successfully!");
                 form.reset();
+                navigate({ to: "/contact/thank-you" });
               } else {
                 const responseData = await response.json();
                 toast.error(responseData.error || "Failed to send message. Please try again.");
