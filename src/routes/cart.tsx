@@ -63,7 +63,7 @@ function CartPage() {
                 }}
               >
                 <Link to="/products/$slug" params={{ slug: l.slug }} className="shrink-0">
-                  <img src={l.product.image} alt={l.product.name} className="h-24 w-24 rounded-xl object-cover transition-transform duration-500 hover:scale-110" />
+                  <img src={l.product.image} alt={l.product.name} className="h-24 w-24 rounded-xl object-contain bg-black transition-transform duration-500 hover:scale-110" />
                 </Link>
                 <div className="flex flex-1 flex-col justify-between">
                   <div className="flex items-start justify-between gap-4">

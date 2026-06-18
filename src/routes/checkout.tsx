@@ -536,7 +536,7 @@ function CheckoutPage() {
           <div className="mt-4 space-y-4">
             {checkoutLines.map((line) => (
               <div key={line.slug} className="flex gap-3 rounded-xl border border-border/50 bg-background/40 p-3">
-                <img src={line.product.image} alt={line.product.name} className="h-20 w-20 rounded-lg object-cover" />
+                <img src={line.product.image} alt={line.product.name} className="h-20 w-20 rounded-lg object-contain bg-black" />
                 <div className="min-w-0 flex-1">
                   <div className="font-semibold">{line.product.name}</div>
                   <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{line.product.description}</p>

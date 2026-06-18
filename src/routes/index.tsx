@@ -369,7 +369,7 @@ function ProductCard({
             loading="lazy"
             width={800}
             height={800}
-            className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+            className="h-full w-full object-contain bg-black transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background/60 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
           <div className="absolute left-3 top-3 rounded-full bg-background/70 px-2.5 py-1 text-[10px] uppercase tracking-widest text-muted-foreground backdrop-blur glass-card">

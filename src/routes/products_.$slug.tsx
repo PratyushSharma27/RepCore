@@ -159,7 +159,7 @@ function ProductPage() {
               alt={product.name}
               width={1200}
               height={1200}
-              className="aspect-square w-full object-cover transition-transform duration-700 hover:scale-105"
+              className="aspect-square w-full object-contain bg-black transition-transform duration-700 hover:scale-105"
             />
             <div className="absolute left-4 top-4 rounded-full bg-background/70 px-3 py-1.5 text-[10px] uppercase tracking-widest backdrop-blur glass-card font-semibold">
               {product.category}
@@ -379,7 +379,7 @@ function RelatedCard({
             loading="lazy"
             width={800}
             height={800}
-            className="h-full w-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
+            className="h-full w-full object-contain bg-black transition-all duration-700 group-hover:scale-110 group-hover:rotate-1"
           />
         </div>
         <div className="flex items-center justify-between p-4">
