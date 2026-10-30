@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capabilities &amp; Architecture Blueprints — Production Engineering | Repcore</title>
+  <meta name="description" content="Explore Repcore's production engineering blueprints, multi-tenant SaaS architectures, mobile app systems, and 99+ Lighthouse web platforms built by founder Pratyush Sharma." />
+  <meta name="keywords" content="software architecture blueprints, multi-tenant SaaS architecture, React Next.js production engineering, custom dashboard engineering, high performance web development, Repcore capabilities" />
+  <meta name="author" content="Pratyush Sharma — Repcore Studio" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="canonical" href="https://repcore.online/work.html" />
+  <link rel="icon" type="image/svg+xml" href="assets/repcore-icon.svg" />
+
+  <!-- Open Graph / Social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Repcore Studio" />
+  <meta property="og:locale" content="en_IN" />
+  <meta property="og:url" content="https://repcore.online/work.html" />
+  <meta property="og:title" content="Capabilities &amp; Architecture Blueprints — Production Engineering | Repcore" />
+  <meta property="og:description" content="Explore Repcore's architectural capabilities, prototype blueprints, and reference systems across SaaS MVPs, mobile applications, and web platforms." />
+  <meta property="og:image" content="https://repcore.online/assets/hero-devices.jpg" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Capabilities &amp; Architecture Blueprints — Production Engineering | Repcore" />
+  <meta name="twitter:description" content="Explore Repcore's architectural capabilities, prototype blueprints, and reference systems across SaaS MVPs, mobile applications, and web platforms." />
+  <meta name="twitter:image" content="https://repcore.online/assets/hero-devices.jpg" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    "name": "Repcore Engineering Capabilities & Architectural Blueprints",
+    "url": "https://repcore.online/work.html",
+    "description": "Reference architectures and production engineering blueprints for SaaS MVPs, real-time analytics dashboards, mobile apps, and API ecosystems by Repcore Studio.",
+    "isPartOf": { "@id": "https://repcore.online/#website" }
+  }
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" /></noscript>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="ambient" aria-hidden="true">
+    <div class="ambient__orb ambient__orb--1"></div>
+    <div class="ambient__orb ambient__orb--2"></div>
+    <div class="ambient__orb ambient__orb--3"></div>
+  </div>
+
+  <!-- Navigation -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo" id="nav-logo" aria-label="Repcore home">
+        <span class="logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.5 14H16.8L20.8 20.5H16.2L12.5 14Z" fill="#a78bfa"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5 4H13.8C17.3 4 19.8 6.2 19.8 9.2C19.8 12.2 17.3 14.4 13.8 14.4H9.4V20.5H5V4ZM9.4 7.6V10.8H13.4C14.7 10.8 15.6 10.1 15.6 9.2C15.6 8.3 14.7 7.6 13.4 7.6H9.4Z" fill="#ffffff"/><path d="M12.2 7.7L13.7 9.2L12.2 10.7L10.7 9.2L12.2 7.7Z" fill="#d946ef"/></svg></span>
+        Repcore
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="index.html" id="nav-home">Home</a>
+        <a href="services.html" id="nav-services">Services</a>
+        <a href="work.html" id="nav-work" class="is-active" aria-current="page">Capabilities</a>
+        <a href="pricing.html" id="nav-pricing">Pricing</a>
+        <a href="about.html" id="nav-about">About</a>
+        <a href="contact.html" id="nav-contact">Contact</a>
+      </nav>
+      <a href="contact.html" class="btn btn--small btn--outline" id="nav-cta">
+        Get Started
+        <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </a>
+      <button class="nav__toggle" id="nav-toggle" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+    <div class="nav__mobile" id="nav-mobile">
+      <a href="index.html">Home</a>
+      <a href="services.html">Services</a>
+      <a href="work.html">Capabilities</a>
+      <a href="pricing.html">Pricing</a>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- Page Hero -->
+    <section class="page-hero">
+      <div class="container page-hero__inner">
+        <p class="hero__eyebrow reveal">Capabilities &amp; Architectural Blueprints</p>
+        <h1 class="hero__title page-hero__title reveal">
+          Engineered for modern software.<br /><span class="text-accent">Built without agency fluff.</span>
+        </h1>
+        <p class="hero__sub reveal">
+          We are a newly founded software studio launching in 2026. Rather than relying on legacy claims or fabricated agency logos, we demonstrate our engineering standards through production reference architectures, code blueprints, and our zero-upfront-risk model.
+        </p>
+      </div>
+    </section>
+
+    <!-- Work Showcase Section -->
+    <section class="section section--flush">
+      <div class="container">
+        <!-- Interactive Category Filters -->
+        <div class="filters reveal" role="tablist" aria-label="Filter architecture blueprints">
+          <button class="filter is-active" data-filter="all" role="tab" aria-selected="true">All Systems</button>
+          <button class="filter" data-filter="saas" role="tab" aria-selected="false">SaaS Architecture</button>
+          <button class="filter" data-filter="mobile" role="tab" aria-selected="false">Mobile Platforms</button>
+          <button class="filter" data-filter="dashboard" role="tab" aria-selected="false">Dashboards</button>
+          <button class="filter" data-filter="website" role="tab" aria-selected="false">Modern Web</button>
+          <button class="filter" data-filter="api" role="tab" aria-selected="false">APIs &amp; Microservices</button>
+        </div>
+
+        <!-- Cases Grid -->
+        <div class="cases" id="cases-grid">
+          
+          <!-- Blueprint 1: SaaS Architecture -->
+          <article class="case glass reveal" data-category="saas" id="case-saas-engine">
+            <div class="work__media work__media--blue">
+              <div class="wm-site">
+                <div class="wm-site__nav"></div>
+                <div class="wm-site__hero"></div>
+                <div class="wm-site__row"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+            <div class="work__meta">
+              <div>
+                <p class="eyebrow" style="margin-bottom: 6px;">Reference Blueprint 01 · SaaS</p>
+                <h3>Multi-Tenant SaaS Foundation</h3>
+                <p>Complete product engine with Row-Level Security, multi-tenant PostgreSQL schemas, Stripe usage billing, and team invitation workflows.</p>
+                <div class="case-tags">
+                  <span class="case-tag">Next.js 15</span>
+                  <span class="case-tag">TypeScript</span>
+                  <span class="case-tag">Supabase RLS</span>
+                  <span class="case-tag">Stripe Billing</span>
+                </div>
+              </div>
+            </div>
+            <div class="case__metrics">
+              <div><strong>&lt;800ms</strong><span>P95 API response time</span></div>
+              <div><strong>Zero</strong><span>Cross-tenant data leakage</span></div>
+              <div><strong>Webhook</strong><span>Automated billing sync</span></div>
+            </div>
+          </article>
+
+          <!-- Blueprint 2: Mobile Platform -->
+          <article class="case glass reveal" data-category="mobile" id="case-mobile-engine">
+            <div class="work__media work__media--violet">
+              <div class="visual-mobile">
+                <div class="vm-phone" style="transform: scale(1.15);">
+                  <div class="vm-notch"></div>
+                  <div class="vm-card"></div>
+                  <div class="vm-card vm-card--2"></div>
+                  <div class="vm-tab"><i></i><i></i><i></i></div>
+                </div>
+              </div>
+            </div>
+            <div class="work__meta">
+              <div>
+                <p class="eyebrow" style="margin-bottom: 6px;">Reference Blueprint 02 · Mobile</p>
+                <h3>Cross-Platform Mobile Architecture</h3>
+                <p>Native-performing iOS and Android architecture featuring biometric keychain security, offline SQLite sync, and WebSocket real-time updates.</p>
+                <div class="case-tags">
+                  <span class="case-tag">React Native</span>
+                  <span class="case-tag">Expo SDK</span>
+                  <span class="case-tag">FaceID / TouchID</span>
+                  <span class="case-tag">SQLite Offline</span>
+                </div>
+              </div>
+            </div>
+            <div class="case__metrics">
+              <div><strong>60fps</strong><span>Hardware-accelerated UI</span></div>
+              <div><strong>iOS &amp; Android</strong><span>Shared single codebase</span></div>
+              <div><strong>Instant</strong><span>Offline-first optimistic updates</span></div>
+            </div>
+          </article>
+
+          <!-- Blueprint 3: Dashboard Analytics -->
+          <article class="case glass reveal" data-category="dashboard" id="case-dashboard-engine">
+            <div class="work__media work__media--teal">
+              <div class="visual-bars wm-bars">
+                <span style="--h:35%"></span><span style="--h:60%"></span><span style="--h:48%"></span>
+                <span style="--h:85%"></span><span style="--h:55%"></span><span style="--h:94%"></span>
+                <span style="--h:72%"></span><span style="--h:88%"></span>
+              </div>
+            </div>
+            <div class="work__meta">
+              <div>
+                <p class="eyebrow" style="margin-bottom: 6px;">Reference Blueprint 03 · Analytics</p>
+                <h3>Mission Control Operations Console</h3>
+                <p>Dense data interface with virtualized tables for 50,000+ records, client-side faceted filtering, and role-based access control (RBAC).</p>
+                <div class="case-tags">
+                  <span class="case-tag">React</span>
+                  <span class="case-tag">TailwindCSS</span>
+                  <span class="case-tag">PostgreSQL</span>
+                  <span class="case-tag">Granular RBAC</span>
+                </div>
+              </div>
+            </div>
+            <div class="case__metrics">
+              <div><strong>50k+ Rows</strong><span>Zero lag virtual scrolling</span></div>
+              <div><strong>CSV / PDF</strong><span>Instant stream exports</span></div>
+              <div><strong>Audit Log</strong><span>Compliance-ready tracking</span></div>
+            </div>
+          </article>
+
+          <!-- Blueprint 4: Modern Web -->
+          <article class="case glass reveal" data-category="website" id="case-web-engine">
+            <div class="work__media work__media--rose">
+              <div class="visual-browser" style="width: 82%; height: 75%; padding: 24px;">
+                <div class="vb-bar"><i></i><i></i><i></i></div>
+                <div class="vb-hero" style="height: 90px; background: linear-gradient(135deg, rgba(217,70,239,0.4), rgba(124,92,255,0.2));"></div>
+                <div class="vb-row" style="margin-top: 14px;"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+            <div class="work__meta">
+              <div>
+                <p class="eyebrow" style="margin-bottom: 6px;">Reference Blueprint 04 · Web</p>
+                <h3>High-Conversion Headless Web System</h3>
+                <p>Modern digital experience with Apple-inspired interaction polish, headless CMS editorial control, and sub-second global edge delivery.</p>
+                <div class="case-tags">
+                  <span class="case-tag">Next.js</span>
+                  <span class="case-tag">Framer Motion</span>
+                  <span class="case-tag">Sanity CMS</span>
+                  <span class="case-tag">Vercel Edge</span>
+                </div>
+              </div>
+            </div>
+            <div class="case__metrics">
+              <div><strong>98+</strong><span>Target Core Web Vitals</span></div>
+              <div><strong>&lt;0.5s</strong><span>First Contentful Paint</span></div>
+              <div><strong>SEO</strong><span>Automated OpenGraph &amp; Schema</span></div>
+            </div>
+          </article>
+
+          <!-- Blueprint 5: IoT & Mapping -->
+          <article class="case glass reveal" data-category="saas" id="case-mapping-engine">
+            <div class="work__media work__media--slate">
+              <div class="visual-app" style="width: 80%; height: 74%;">
+                <div class="va-col"><span></span><span></span><span></span></div>
+                <div class="va-col"><span></span><span></span></div>
+                <div class="va-col"><span></span><span></span><span></span><span></span></div>
+              </div>
+            </div>
+            <div class="work__meta">
+              <div>
+                <p class="eyebrow" style="margin-bottom: 6px;">Reference Blueprint 05 · Systems</p>
+                <h3>Real-Time Telemetry &amp; Geospatial Engine</h3>
+                <p>Live asset synchronization with WebGL map clustering, coordinate ingestion pipelines, and geofencing event triggers.</p>
+                <div class="case-tags">
+                  <span class="case-tag">Mapbox GL</span>
+                  <span class="case-tag">TimescaleDB</span>
+                  <span class="case-tag">Go Microservices</span>
+                  <span class="case-tag">WebSockets</span>
+                </div>
+              </div>
+            </div>
+            <div class="case__metrics">
+              <div><strong>100ms</strong><span>Live telemetry refresh</span></div>
+              <div><strong>10k+ Pins</strong><span>Hardware-accelerated clustering</span></div>
+              <div><strong>Geofence</strong><span>Instant sub-second webhooks</span></div>
+            </div>
+          </article>
+
+          <!-- Blueprint 6: Enterprise API -->
+          <article class="case glass reveal" data-category="api" id="case-api-engine">
+            <div class="work__media work__media--amber">
+              <div class="wm-nodes">
+                <div class="wm-node wm-node--c">Repcore</div>
+                <div class="wm-node">Stripe</div>
+                <div class="wm-node">Salesforce</div>
+                <div class="wm-node">PostgreSQL</div>
+              </div>
+            </div>
+            <div class="work__meta">
+              <div>
+                <p class="eyebrow" style="margin-bottom: 6px;">Reference Blueprint 06 · APIs</p>
+                <h3>Resilient Integration &amp; Event Bus</h3>
+                <p>Distributed queue architecture unifying third-party payment gateways, CRM synchronization, and external webhooks with guaranteed delivery.</p>
+                <div class="case-tags">
+                  <span class="case-tag">Node.js</span>
+                  <span class="case-tag">Redis Queues</span>
+                  <span class="case-tag">AWS Lambda</span>
+                  <span class="case-tag">Docker</span>
+                </div>
+              </div>
+            </div>
+            <div class="case__metrics">
+              <div><strong>Idempotent</strong><span>Zero duplicate transactions</span></div>
+              <div><strong>Exponential</strong><span>Automated failure retry backoff</span></div>
+              <div><strong>Encrypted</strong><span>End-to-end secret vaulting</span></div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Deep Dive Spotlight -->
+    <section class="section">
+      <div class="container">
+        <div class="section__head reveal">
+          <p class="eyebrow">The Repcore Commitment</p>
+          <h2 class="section__title">How we prove our engineering without vanity reviews.</h2>
+        </div>
+        <div class="casestudy glass reveal">
+          <div class="casestudy__head">
+            <div>
+              <p class="floating-badge">Day-One Transparency · Founded 2026</p>
+              <h3 class="casestudy__title" style="margin-top: 14px;">You test real staging software before releasing milestone payments.</h3>
+            </div>
+            <a href="contact.html" class="btn btn--light">Start a project →</a>
+          </div>
+          <div class="casestudy__grid">
+            <div>
+              <h3>1. Interactive Prototype Wireframe</h3>
+              <p>We work directly with you to map out workflows and technical constraints, then deliver an interactive prototype so you can validate UX before writing production code.</p>
+            </div>
+            <div>
+              <h3>2. Functional Staging Preview</h3>
+              <p>We build out your features on private cloud staging links. You log in, run test payments, write data, and test real workflows in your browser with zero financial risk.</p>
+            </div>
+            <div>
+              <h3>3. 100% Code &amp; IP Handover</h3>
+              <p>All source code is committed directly to your private GitHub organization from Day One. When milestones are approved and deployed, you own every line of code outright.</p>
+            </div>
+          </div>
+          <div class="casestudy__stats">
+            <div><strong>2026</strong><span>Founded with day-one honesty</span></div>
+            <div><strong>₹0</strong><span>Upfront deposit required</span></div>
+            <div><strong>100%</strong><span>Code &amp; IP ownership</span></div>
+            <div><strong>1:1</strong><span>Direct founder engineering</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Call to Action Banner -->
+    <section class="section section--flush" style="padding-bottom: 120px;">
+      <div class="container">
+        <div class="contact glass reveal" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding: 72px 32px;">
+          <p class="eyebrow">Start Your Project</p>
+          <h2 class="hero__title" style="font-size: clamp(32px, 4vw, 54px); margin-bottom: 16px;">
+            Have an ambitious idea?<br /><span class="text-accent">Let’s build it together.</span>
+          </h2>
+          <p class="hero__sub" style="max-width: 600px; margin-bottom: 32px;">
+            Review milestone staging builds before releasing payments. Direct founder leadership, clean engineering, zero agency bloat.
+          </p>
+          <div style="display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;">
+            <a href="contact.html" class="btn btn--light">
+              Start Your Project
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="pricing.html" class="btn btn--ghost">Explore Pricing Calculator</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <div class="footer__brand">
+        <a href="index.html" class="nav__logo">
+          <span class="logo-mark"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12.5 14H16.8L20.8 20.5H16.2L12.5 14Z" fill="#a78bfa"/><path fill-rule="evenodd" clip-rule="evenodd" d="M5 4H13.8C17.3 4 19.8 6.2 19.8 9.2C19.8 12.2 17.3 14.4 13.8 14.4H9.4V20.5H5V4ZM9.4 7.6V10.8H13.4C14.7 10.8 15.6 10.1 15.6 9.2C15.6 8.3 14.7 7.6 13.4 7.6H9.4Z" fill="#ffffff"/><path d="M12.2 7.7L13.7 9.2L12.2 10.7L10.7 9.2L12.2 7.7Z" fill="#d946ef"/></svg></span>
+          Repcore
+        </a>
+        <p>A modern software engineering studio founded in 2026 by Pratyush Sharma. High-velocity shipping with zero agency bloat.</p>
+        <div class="footer__direct">
+          <a href="mailto:pratyush@tenimal.com">pratyush@tenimal.com</a>
+          <span>·</span>
+          <a href="tel:+919958691355">+91 99586 91355</a>
+        </div>
+      </div>
+      <div class="footer__cols">
+        <div>
+          <h4>Services</h4>
+          <a href="services.html#websites">Websites</a>
+          <a href="services.html#web-apps">Web Apps</a>
+          <a href="services.html#saas">SaaS MVPs</a>
+          <a href="services.html#dashboards">Dashboards</a>
+          <a href="services.html#mobile">Mobile Apps</a>
+          <a href="services.html#api">API Integrations</a>
+          <a href="services.html#maintenance">Website Maintenance</a>
+        </div>
+        <div>
+          <h4>Studio</h4>
+          <a href="work.html">Capabilities</a>
+          <a href="pricing.html">Pricing &amp; Calculator</a>
+          <a href="about.html">About &amp; Founder</a>
+          <a href="contact.html">Contact</a>
+        </div>
+        <div>
+          <h4>Direct</h4>
+          <a href="mailto:pratyush@tenimal.com">pratyush@tenimal.com</a>
+          <a href="tel:+919958691355">+91 99586 91355</a>
+          <a href="https://wa.me/919958691355" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer__bottom">
+      <p>© <span id="year">2026</span> Repcore Studio · Founded by Pratyush Sharma. All rights reserved.</p>
+      <p><a href="contact.html">Contact</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+    </div>
+  </footer>
+
+  <script defer src="assets/lenis.min.js"></script>
+  <script defer src="script.js"></script>
+</body>
+</html>

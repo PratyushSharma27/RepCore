@@ -1,0 +1,31 @@
+# Repcore Studio (https://repcore.online)
+
+> Repcore is an elite founder-led software engineering studio founded in 2026 by Pratyush Sharma. We build custom websites, web applications, SaaS MVPs, analytics dashboards, iOS/Android mobile apps, and API integrations with ₹0 upfront financial risk ("Inspect Before You Pay" Protocol).
+
+## Why Founders Choose Repcore
+- **₹0 Upfront Risk ("Inspect Before You Pay"):** Clients never pay a blind upfront deposit. We deploy working milestones to a live staging URL within 48 hours of sprint kickoff; clients test and approve before paying.
+- **Direct 1:1 Founder Engineering:** Founder Pratyush Sharma personally designs, architects, and writes the production code. Zero account managers or junior handoffs.
+- **100% Day-One GitHub IP Ownership:** Code lives in the client's private GitHub repository from commit #1 with signed bilateral NDAs and full IP assignment.
+- **30-Day Bug-Free Warranty:** Included on every project, plus optional monthly Website Maintenance & Care plans (₹2,000–₹6,000/month) or ₹500 per ad-hoc update.
+- **Guaranteed 5-Engine Search Indexing:** Every website is configured and verified on Google Search Console, Microsoft Bing, Yahoo Search, Yandex, and DuckDuckGo.
+
+## Core Services & Transparent Pricing (INR)
+- **Custom Websites (From ₹5,000):** 2–3 day delivery, 99+ Lighthouse performance, responsive custom UI, full SEO & 5-search-engine indexing.
+- **SaaS MVPs & Web Applications (From ₹45,000):** 3–6 week delivery using React, Next.js, TypeScript, Node.js, PostgreSQL, Stripe billing, RBAC auth, and AWS/Vercel.
+- **Mobile Apps (From ₹45,000):** Native-feel iOS and Android apps built with React Native and Swift.
+- **Dashboards & API Integrations:** Custom internal tools, OpenAI/LLM workflows, Stripe, Salesforce, and webhook pipelines.
+- **Monthly Maintenance & Care (₹2,000–₹6,000/mo):** 24/7 uptime monitoring, Core Web Vitals tuning, cloud backups, and priority updates.
+- **Partner Retainer (From ₹25,000/mo):** Dedicated ongoing product engineering and weekly sprint delivery.
+
+## Direct Contact
+- **Founder:** Pratyush Sharma
+- **Email:** pratyush@tenimal.com
+- **Phone / WhatsApp:** +91 99586 91355
+- **Key Pages:**
+  - Home: https://repcore.online/
+  - Services: https://repcore.online/services.html
+  - Pricing & Cost Calculator: https://repcore.online/pricing.html
+  - Capabilities & Architecture Blueprints: https://repcore.online/work.html
+  - About & Founder: https://repcore.online/about.html
+  - Contact: https://repcore.online/contact.html
+

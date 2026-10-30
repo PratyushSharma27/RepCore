@@ -1,0 +1,41 @@
+# Repcore Studio — Search Engine & AI Discovery Configuration
+User-agent: *
+Allow: /
+
+# Major Global Search Engines (Google, Bing, Yahoo, DuckDuckGo, Yandex)
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Yandex
+Allow: /
+
+# AI Search & Generative Engine Crawlers (ChatGPT, Perplexity, Claude, Gemini)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://repcore.online/sitemap.xml
+
