@@ -2,5 +2,23 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "redirects": [
+    { "source": "/about", "destination": "/about.html", "permanent": true },
+    { "source": "/contact", "destination": "/contact.html", "permanent": true },
+    { "source": "/contact/thank-you", "destination": "/contact.html", "permanent": true },
+    { "source": "/services", "destination": "/services.html", "permanent": true },
+    { "source": "/pricing", "destination": "/pricing.html", "permanent": true },
+    { "source": "/work", "destination": "/work.html", "permanent": true },
+    { "source": "/privacy", "destination": "/privacy.html", "permanent": true },
+    { "source": "/terms", "destination": "/terms.html", "permanent": true },
+    { "source": "/faq", "destination": "/#faq", "permanent": true },
+    { "source": "/products", "destination": "/services.html", "permanent": true },
+    { "source": "/products/:slug*", "destination": "/services.html", "permanent": true },
+    { "source": "/cart", "destination": "/", "permanent": true },
+    { "source": "/checkout", "destination": "/pricing.html", "permanent": true },
+    { "source": "/orders", "destination": "/", "permanent": true },
+    { "source": "/track", "destination": "/", "permanent": true },
+    { "source": "/admin", "destination": "/", "permanent": true }
+  ]
 }
