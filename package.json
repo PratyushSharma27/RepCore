@@ -1,0 +1,9 @@
+{
+  "name": "repcore-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Repcore Studio (repcore.online) — Elite Founder-Led Software Engineering Studio",
+  "scripts": {
+    "build": "mkdir -p dist && cp -R *.html *.css *.js *.xml *.txt assets dist/"
+  }
+}
