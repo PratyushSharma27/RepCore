@@ -7,3 +7,4 @@
     "build": "mkdir -p dist && cp -R *.html *.css *.js *.xml *.txt assets dist/"
   }
 }
+
