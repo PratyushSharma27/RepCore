@@ -304,12 +304,12 @@
   }
 
   // -------------------------------------------------------------------------
-  // 7. Interactive Form Submission
+  // 7. Interactive Form Submission (Connected to Formspree)
   // -------------------------------------------------------------------------
   const form = document.getElementById('contact-form');
   const status = document.getElementById('form-status');
   if (form) {
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       let ok = true;
       ['input-name', 'input-email'].forEach((id) => {
@@ -332,20 +332,42 @@
         btn.disabled = true;
         btn.textContent = 'Sending inquiry…';
       }
-      setTimeout(() => {
+
+      const formData = new FormData(form);
+      const selectedServices = Array.from(form.querySelectorAll('input[name="service"]:checked')).map((el) => el.value);
+      if (selectedServices.length) {
+        formData.set('services_requested', selectedServices.join(', '));
+      }
+      formData.append('_subject', 'New Repcore Studio Client Inquiry — repcore.online');
+
+      try {
+        const res = await fetch('https://formspree.io/f/mrevvwjn', {
+          method: 'POST',
+          body: formData,
+          headers: { Accept: 'application/json' },
+        });
+        if (!res.ok) throw new Error('Submission failed');
+
         if (btn) btn.textContent = 'Inquiry Sent ✓';
         if (status) {
           status.style.color = '#30d158';
-          status.textContent = "Thank you! Pratyush Sharma will reply within 24 hours.";
+          status.textContent = 'Thank you! Pratyush Sharma will reply within 24 hours.';
         }
         form.reset();
+      } catch (err) {
+        if (btn) btn.textContent = 'Send inquiry';
+        if (status) {
+          status.style.color = '#ff453a';
+          status.textContent = 'Could not send right now — please email pratyush@tenimal.com or message on WhatsApp.';
+        }
+      } finally {
         setTimeout(() => {
           if (btn) {
             btn.disabled = false;
             btn.textContent = 'Send inquiry';
           }
         }, 3500);
-      }, 850);
+      }
     });
   }
 
