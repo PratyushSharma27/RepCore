@@ -47,7 +47,7 @@
   <!-- Subtle Core Orbit Ring -->
   <circle cx="256" cy="256" r="186" stroke="#ffffff" stroke-opacity="0.04" stroke-width="1.5" />
 
-  <!-- Repcore Geometric "R + Core Node" Monogram -->
+  <!-- RepCore Studio Geometric "R + Core Node" Monogram -->
   <g filter="url(#rc-glow)">
     <!-- Forward Velocity Leg of the R -->
     <path d="M236 268H314L394 396H308L236 268Z" fill="url(#rc-leg)" />

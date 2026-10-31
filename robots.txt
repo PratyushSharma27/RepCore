@@ -1,4 +1,4 @@
-# Repcore Studio — Search Engine & AI Discovery Configuration
+# RepCore Studio — Search Engine & AI Discovery Configuration
 User-agent: *
 Allow: /
 

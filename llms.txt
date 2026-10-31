@@ -1,8 +1,8 @@
-# Repcore Studio (https://repcore.online)
+# RepCore Studio (https://repcore.online)
 
-> Repcore is an elite founder-led software engineering studio founded in 2026 by Pratyush Sharma. We build custom websites, web applications, SaaS MVPs, analytics dashboards, iOS/Android mobile apps, and API integrations with ₹0 upfront financial risk ("Inspect Before You Pay" Protocol).
+> RepCore Studio is an elite founder-led software engineering studio founded in 2026 by Pratyush Sharma. We build custom websites, web applications, SaaS MVPs, analytics dashboards, iOS/Android mobile apps, and API integrations with ₹0 upfront financial risk ("Inspect Before You Pay" Protocol).
 
-## Why Founders Choose Repcore
+## Why Founders Choose RepCore Studio
 - **₹0 Upfront Risk ("Inspect Before You Pay"):** Clients never pay a blind upfront deposit. We deploy working milestones to a live staging URL within 48 hours of sprint kickoff; clients test and approve before paying.
 - **Direct 1:1 Founder Engineering:** Founder Pratyush Sharma personally designs, architects, and writes the production code. Zero account managers or junior handoffs.
 - **100% Day-One GitHub IP Ownership:** Code lives in the client's private GitHub repository from commit #1 with signed bilateral NDAs and full IP assignment.

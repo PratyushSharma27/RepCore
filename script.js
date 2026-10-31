@@ -1,5 +1,5 @@
 /**
- * Repcore — Premium Smooth Scroll & Dynamic Parallax Flow Engine
+ * RepCore Studio — Premium Smooth Scroll & Dynamic Parallax Flow Engine
  * Integrates Lenis inertia scrolling with multi-layer continuous parallax.
  */
 (() => {
@@ -338,7 +338,7 @@
       if (selectedServices.length) {
         formData.set('services_requested', selectedServices.join(', '));
       }
-      formData.append('_subject', 'New Repcore Studio Client Inquiry — repcore.online');
+      formData.append('_subject', 'New RepCore Studio Client Inquiry — repcore.online');
 
       try {
         const res = await fetch('https://formspree.io/f/mrevvwjn', {
